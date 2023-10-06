@@ -2,15 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class ProjectTeam(db.Model):
-    __tablename__ = 'project_team'
-    idproject_team = db.Column(db.Integer, primary_key=True)
-    team_name = db.Column(db.String(45))
-    team_description = db.Column(db.String(64))
-    created_at = db.Column(db.DateTime, nullable=False)
-    last_modified = db.Column(db.DateTime, nullable=False)
-    updated_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-
 class Project(db.Model):
     __tablename__ = 'project'
     idproject = db.Column(db.Integer, primary_key=True)
@@ -31,14 +22,6 @@ class Role(db.Model):
     user = db.Column(db.Boolean)
     client = db.Column(db.Boolean)
 
-class Member(db.Model):
-    __tablename__ = 'member'
-    idmember = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(45), nullable=False)
-    email = db.Column(db.String(255))
-    password = db.Column(db.String(32), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    role_idrole1 = db.Column(db.Integer, db.ForeignKey('role.idrole'), nullable=False)
 
 class Tasks(db.Model):
     __tablename__ = 'tasks'
