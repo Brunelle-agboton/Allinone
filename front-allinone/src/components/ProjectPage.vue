@@ -37,8 +37,10 @@
             <button class="btn-icon"><i class="bi bi-chevron-right"></i></button>
             <button class="btn-icon"><i class="bi bi-chevron-double-right"></i></button>
         </div>
-    </div>
+          </div>
         <div class="table-responsive">
+          <a v-for="project in projects" :key="project.idproject" :href="'/projectdetails/' + project.idproject">
+
           <table class="table table-striped table-sm">
             <thead class="head-content">
               <tr>
@@ -58,122 +60,33 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <a href="/projectdetails"> 
-                  <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                  </td>
-                  <td>1,001</td>
-                  <td>random</td>
-                  <td>data</td>
-                  <td>placeholder</td>
-                  <td>text</td>
-                  <td>text</td>
-                  <td>text</td>
-                  <td>text</td>
-                  <td>text</td>
-                </a>
-                
-              </tr>
-              <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                </td>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-              </tr>
-              <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                </td>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-              </tr>
-              <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                </td>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-              </tr>
-              <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                </td>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-              </tr>
-              <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                </td>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-              </tr>
-              <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" id="row1">
-                    <label for="row1"></label>
-                </td>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-                <td>text</td>
-              </tr>
+              <!-- Utilisation de v-for pour afficher les projets -->
+        <tr>
+          <td class="checkbox-cell">
+            <input type="checkbox" :id="'row' + project.idproject">
+            <label :for="'row' + project.idproject"></label>
+          </td>
+          <td>{{ project.code }}</td>
+          <td>{{ project.name }}</td>
+          <td>{{ project.description }}</td>
+          <td>{{ project.created_at }}</td>
+          <td>{{ project.expired_at }}</td>
+          <td>{{ project.progress }}</td>
+          <td>{{ project.comments }}</td>
+          <td>{{ project.requirement }}</td>
+          <td>{{ project.status }}</td>
+        </tr>
             </tbody>
           </table>
+      </a>
         </div>
       </main>
     </div>
 </template>
 <script>
 import ProjectForm1 from './_Forms/ProjectForm1.vue';
+import {getListProject} from '@/services/adminServices';
+
 
 export default {
   name: 'ProjectPage',
@@ -182,6 +95,7 @@ export default {
   },
   data() {
     return {
+      projects: [],
       isModalVisible: false,
     }
   },
@@ -192,121 +106,21 @@ export default {
       },
     closeModal() {
         this.isModalVisible = false;
-      }
+      },
+      fetchData() {
+      getListProject()
+        .then((response) => {
+          this.projects = response.data
+        })
+        .catch((error) => {
+          console.error(error)
+        });
+    },
+  },
+  mounted() {
+    // Appeler fetchData pour charger la liste des projets au chargement de la page
+    this.fetchData();
   },
 };
 </script>
-<style>
-/** Options de la table**/
-.table-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    border-bottom: 2px solid #ddd;
-    padding: 10px;
-    margin-bottom: 5%;
-}
-
-.table-cell {
-    display: inline-block;
-}
-.btn-icon {
-    background: none;
-    border: 1px solid #EAE1D2;
-    cursor: pointer;
-    font-size: 16px;
-    align-items: center;
-}
-
-.search {
-    display: flex;
-    align-items: center;
-}
-
-.search input {
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 3px;
-    background-color: #EAE1D2;
-}
-
-.search .btn-icon {
-    background-color: #002060;
-    color: #EAE1D2;
-    border: none;
-    padding: 5px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-#itemsPerPage {
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 3px;
-}
-
-.pagination .page-number {
-    margin: 0 10px;
-}
-/** Table**/
-
-table {
-  border: 4px solid #002060;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-/* Ajouter une couleur de fond à l'en-tête du tableau */
-.head-content {
-background-color: #002060;
-color: #002060;
-text-align: left;
-padding: 8px;
-}
-/* Ajouter des séparateurs entre les cellules du tableau */
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  color: #002060;
-}
-
-/* Ajouter un style pour les lignes lorsque vous survolez */
-tr:hover {
-  background-color: #002060;
-}
-
-/* Ajouter des cases à cocher à chaque ligne */
-.checkbox-cell {
-  width:2%;
-  margin-top: 0px;
-
-  text-align: center;
-}
-
-/* Ajouter une option pour supprimer lorsque la case est cochée */
-.checkbox-cell input[type="checkbox"] {
-  display: none;
-}
-.checkbox-cell label {
-            cursor: pointer;
-            position: relative;
-            padding-left: 25px;
-        }
-
-.checkbox-cell label:before {
-  content: "";
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 1px solid #ddd;
-  position: absolute;
-  left: 0;
-  top: 1px;
-}
-
-.checkbox-cell input[type="checkbox"]:checked + label:before {
-  background-color: #002060;
-  border: 1px solid #002060;
-}
-</style>
+<style scoped src="../style.css"> </style>

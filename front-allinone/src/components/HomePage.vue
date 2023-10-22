@@ -66,9 +66,7 @@
             </ul>
             </div>
         </div>
-        <div class="col-md-9 col-lg-12 content">
-          <router-view></router-view>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -76,9 +74,6 @@
 
 <script>
 import NavBar from './_Arche/NavBar'
-// import Swiper from 'swiper'; // Importez Swiper
-// import 'swiper/package.json'; // Importez les styles CSS de Swiper
-
 export default {
   name: 'HomePage',
   components: {
@@ -88,68 +83,4 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.bi {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-}
-p{
-  margin-right: 61px;
-}
-
-/*
- * Sidebar
- */
-
-@media (min-width: 768px) {
-  .sidebar .offcanvas-lg {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 48px;
-  }
-  
-}
-
-.sidebar {
-  position: fixed; /* Définir la position absolue */
-  height: 94vh;
-  flex: 0 0 auto;
-  background-color: #77933C
-}
-
-.sidebar .nav-link {
-  font-size: .875rem;
-  font-weight: 500;
-  color: #fff;
-
-}
-
-.sidebar .nav-link.active {
-  color: #002060;
-  background: #9A7029;
-}
-.sidebar .nav-link:focus {
-  color: #002060;
-  background: #9A7029;
-}
-
-.sidebar-heading {
-  font-size: .75rem;
-}
-.dropdown.bottom-div {
-  position: absolute; 
-  bottom: 0; /* La div sera placée en bas de la sidebar */
-  width: 100%;
-  color: #fff; /* Couleur du texte de la div */
-  padding: 10px; 
-  align-items:display;
-}
-.row{
-  background-color: #EAE1D2;
-}
-.content {
-  overflow-y: auto; /* Ajoutez ceci pour activer le défilement vertical lorsque le contenu dépasse la hauteur */
-  max-height: calc(100vh - 48px); /* Réglez la hauteur maximale pour que le contenu reste dans la fenêtre visible */
-}
-</style>
+<style scoped src="../style.css"> </style>

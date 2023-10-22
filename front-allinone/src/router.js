@@ -4,7 +4,7 @@ export default createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/home',
+      path: '/',
       name: 'HomePage',
       component: () => import('./components/HomePage.vue'),
     },
@@ -33,6 +33,7 @@ export default createRouter({
       name: 'ClientsDetail',
       component: () => import('./components/ClientsDetail.vue'),
     },
+    
     {
       path: '/teams',
       name: 'TeamPage',

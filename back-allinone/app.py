@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+
 
 app = Flask(__name__)
-CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Emmanuel_7@localhost/Allinone_db'
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Emmanuel_7@localhost/db_allinone'
 db = SQLAlchemy()
 
 # Lancement du Débogueur
@@ -21,25 +23,28 @@ def hello_world():
 # Ajouter un nouveau client
 @app.route('/admin/client', methods=['POST'])
 def create_client():
-    data = request.get_data()
-    new_address = ClientAddress(street=data['street'], city=data['city'], postal_code=data['postal_code'], country=data['country'])
-    db.session.add(new_address)
-    db.session.commit()
+    data = request.get_json() 
     
+    if 'street' in data and 'city' in data and 'postal_code' in data and 'country' in data:
+        new_address = ClientAddress(client_street=data['street'], client_city=data['city'], client_postal_code=data['postal_code'], client_state=data['country'])
+        db.session.add(new_address)
+    else:
+        return jsonify({'message': 'Missing address client data'}), 400  # Bad Request
+
     client_role = Role.query.filter_by(client=1).first()
 
-    new_client = ClientUser(client_user_name=data['client_name'], 
-                            client_email=data['client_email'], 
-                            client_user_activity=data['client_activity'],
-                            client_user_no=data['client_tel'],
-                            _idclient_address=new_address.idclient_address, 
-                            _idrole=client_role.idrole)
-
-    db.session.add(new_client)
-    db.session.commit()
-    
-    return jsonify({'message': 'Client created successfully'}), 201
-
+    if 'client_name' in data and 'client_email' in data and 'client_activity' in data and 'client_tel' in data:
+        new_client = ClientUser(client_user_name=data['client_name'], 
+                                client_email=data['client_email'], 
+                                client_user_activity=data['client_activity'],
+                                client_user_no=data['client_tel'],
+                                _idclient_address=new_address.idclient_address, 
+                                _idrole=client_role.idrole)
+        db.session.add(new_client)
+        db.session.commit()
+        return jsonify({'message': 'Client created successfully'}), 201
+    else:
+        return jsonify({'message': 'Missing client data'}), 400
 # Modifier les informations d'un client
 # Archiver un client
 
@@ -56,6 +61,16 @@ def delete_client(idclient):
 
     return jsonify({'message': 'Client deleted successfully'}), 200
 
+# Liste des clients
+@app.route('/admin/clients', methods=['GET'])
+def list_client():
+    clients = db.session.query(ClientUser).all()
+    if clients:
+        client_list = [{'idproject': client.idclient_user, 'name': client.client_user_name, 'client_email': client.client_email, 'activity': client.client_user_activity, 'tel': client.client_user_no} for client in clients]
+    else:
+        client_list = []
+    return jsonify(client_list)
+  
 ##################### Projets ############################
 @app.route('/admin/project', methods=['POST'])
 def create_project():
@@ -66,7 +81,7 @@ def create_project():
     db.session.add(new_project)
     db.session.commit()
     
-    return jsonify({'message': 'Project created successfully'}), 201
+    return jsonify({'message': 'Project created successfully', 'idproject': new_project.idproject}), 201
 
 # Route pour modifier un projet, son status et son commentaire
 @app.route('/admin/cp/<int:idproject>', methods=['PUT'])
@@ -105,11 +120,27 @@ def delete_project(idproject):
     db.session.commit()
     return jsonify({'message': 'Projet supprime avec succes'}), 200
 
+# Liste des projeta
 @app.route('/admin/projects', methods=['GET'])
 def list_project():
     projects = db.session.query(Project).all()
-    project_list = [{'idproject': project.idproject, 'name': project.project_name, 'description': project.project_description, 'expired_at': project.expired_at, 'created_at': project.created_at, 'status': project.status, 'requirement': project.Requirement} for project in projects]
-    return jsonify(projects=project_list)
+    project_list = []
+    if projects:
+        for project in projects:
+                comment = Comments.query.filter_by(project_idproject=project.idproject)
+                project_data = {'idproject': project.idproject, 
+                                'name': project.project_name, 
+                                'description': project.project_description, 
+                                'expired_at': project.expired_at, 
+                                'created_at': project.created_at, 
+                                'status': project.project_status, 
+                                'requirement': project.requirement, 
+                                'progress': project.project_step,
+                                'comments': [comments.comment_text for comments in comment]}  # Ajoutez ici les données des commentaires
+                project_list.append(project_data)
+    else:
+        project_list = []
+    return jsonify(project_list)
     
 ##################### Equipe ############################
 # Creer une nouvelle equipe

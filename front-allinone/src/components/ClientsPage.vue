@@ -7,17 +7,21 @@
                 :client="client"
             /></a>
         </div>
-      <button @click="addNewClient" class="btn btn-primary add-button">Ajouter</button>
+      <button @click="showModal" class="btn btn-primary add-button" data-bs-toggle="modal" data-bs-target="#backdrop">Ajouter</button>
+      <ClientForm1 v-show="isModalVisible" @close="closeModal" />
     </div>
 </template>
 <script>
 import ClientCard from './ClientCard.vue';
+import ClientForm1 from './_Forms/ClientForm1.vue';
+import {getListClient} from '@/services/adminServices';
 
 export default {
   name: 'ClientsPage',
-components: {
-    ClientCard,
-},
+  components: {
+      ClientCard,
+      ClientForm1,
+  },
 data() {
     return {
       clients: [
@@ -48,35 +52,36 @@ data() {
         },
         // Ajoutez d'autres clients ici
       ],
+      isModalVisible: false,
     };
   },
   methods: {
-    addNewClient() {
-      // Ajoutez la logique pour ajouter un nouveau client à la liste
-      // par exemple, en poussant un nouvel objet client dans le tableau this.clients
+    // Afficher le modal
+    showModal() {
+        this.isModalVisible = true;
+      },
+    closeModal() {
+        this.isModalVisible = false;
+      },
+    fetchData() {
+      getListClient()
+        .then((response) => {
+          response.data.forEach((client) => {
+          client.logo = "test.jpeg";
+          client.description = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.";
+          this.clients.push(client)
+          });
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.error(error)
+        });
     },
+  },
+  mounted() {
+    this.fetchData();
   },
 };
 </script>
 
-<style scoped>
-/* Styles pour la liste de clients */
-.client-list {
-  margin: 5em;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-a {
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
-    text-decoration: none;
-}
-.add-button {
-    display: flex;
-    margin-left: 74em;
-    margin-top: 10px;
-    align-self: flex-end;
-    background-color: #002060;
-  }
-</style>
+<style scoped src="../style.css"> </style>

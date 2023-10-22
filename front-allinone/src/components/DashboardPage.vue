@@ -107,20 +107,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.card {
-  border: 10 solid #002060 !important;
-  width:20rem;
-  height: 70vh;
-  margin-left: 50px;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  justify-content: right;
-  background: #002060;
-
-}
-.container .row {
-  margin-left: 10em;
-  justify-content: center;
-}
-</style>
+<style scoped src="../style.css"></style>

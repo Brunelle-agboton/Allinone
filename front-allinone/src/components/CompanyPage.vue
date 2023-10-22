@@ -8,6 +8,4 @@ export default {
   name: 'CompanyPage',
 };
 </script>
-<style>
-
-</style>
+<style scoped src="../style.css"> </style>
