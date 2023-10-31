@@ -1,0 +1,1 @@
+ /usr/bin/env /usr/bin/python3 /home/brunelle/.vscode-server/extensions/ms-python.python-2023.18.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 59827 -- /home/brunelle/ETNA/DP/projet_CDA/back-allinone/test_unitaire/test_my_app.py 
