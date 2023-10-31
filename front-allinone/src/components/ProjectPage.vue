@@ -39,7 +39,7 @@
         </div>
           </div>
         <div class="table-responsive">
-          <a v-for="project in projects" :key="project.idproject" :href="'/projectdetails/' + project.idproject">
+          <a v-for="project in projects" :key="project.idproject" :href="'/projet/:' + project.idproject">
 
           <table class="table table-striped table-sm">
             <thead class="head-content">
@@ -123,4 +123,4 @@ export default {
   },
 };
 </script>
-<style scoped src="../style.css"> </style>
+<style src="../style.css"> </style>

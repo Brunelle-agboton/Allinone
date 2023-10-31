@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <header class="navbar sticky-top  flex-md-nowrap p-0 shadow">
-            <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-20 " href="/">Allinone</a>
+    <div class="container">
+        <header class="navbar shadow">
+            <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-20 " href="#">Allinone</a>
             <ul class="nav col-12 col-md-auto mb-2  mb-md-0">
                 <li><a href="#" class="nav-link px-4 link-secondary">Home</a></li>
                 <li><a href="#" class="nav-link px-4">About</a></li>

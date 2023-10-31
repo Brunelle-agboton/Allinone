@@ -66,7 +66,9 @@
             </ul>
             </div>
         </div>
-        
+        <div class="col-md-9 col-lg-12 content">
+          <router-view style="overflow-y: auto;"></router-view>
+        </div>
       </div>
     </div>
   </div>
@@ -83,4 +85,4 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped src="../style.css"> </style>
+<style src="../style.css"> </style>

@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import ProjectDetails from './components/ProjectDetails.vue';
+
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
+      path: '/h',
       name: 'HomePage',
       component: () => import('./components/HomePage.vue'),
     },
@@ -24,10 +26,12 @@ export default createRouter({
       component: () => import('./components/ProjectPage.vue'),
     },
     {
-      path: '/projectdetails',
-      name: 'ProjectDetails',
-      component: () => import('./components/ProjectDetails.vue'),
+      path: '/projet/:id',
+      name: 'projetDetails',
+      component: ProjectDetails,
+      props: true,
     },
+
     {
       path: '/cld',
       name: 'ClientsDetail',

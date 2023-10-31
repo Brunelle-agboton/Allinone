@@ -1,5 +1,4 @@
 <template>
-    <div>
       <div class="container">
           <div class="row">
             <div v-for="(group, status) in groupedProjects" :key="status" class="card border rounded">
@@ -44,7 +43,6 @@
               </div>
             </div>
         </div>
-    </div>
 </template>
 <script>
 export default {
