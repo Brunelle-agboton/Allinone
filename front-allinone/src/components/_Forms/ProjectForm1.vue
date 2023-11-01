@@ -52,7 +52,7 @@ import {addProject} from '@/services/adminServices';
       return {
         modalVisible: false,
         formData: {
-          project_name: '',
+        project_name: '',
         project_description: '',
         expired_at: '',
         },

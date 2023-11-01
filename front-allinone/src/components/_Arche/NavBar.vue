@@ -1,5 +1,4 @@
 <template>
-    <div class="container">
         <header class="navbar shadow">
             <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-20 " href="#">Allinone</a>
             <ul class="nav col-12 col-md-auto mb-2  mb-md-0">
@@ -13,7 +12,6 @@
         <button type="button" class="btn btn-primary">Sign-up</button>
       </div>-->
   </header>
-    </div>
 </template>
 <script>
 export default {

@@ -39,7 +39,7 @@
         </div>
           </div>
         <div class="table-responsive">
-          <a v-for="project in projects" :key="project.idproject" :href="'/projet/:' + project.idproject">
+          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject">
 
           <table class="table table-striped table-sm">
             <thead class="head-content">

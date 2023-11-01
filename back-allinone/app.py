@@ -85,32 +85,78 @@ def create_project():
     
     return jsonify({'message': 'Project created successfully', 'idproject': new_project.idproject}), 201
 
+#Route pour recuperer un projet avec son id
+@app.route('/admin/project/<int:idproject>')
+def get_project(idproject):
+    # Recuperer le projet correspondant à l'ID
+    project = db.session.get(Project, idproject)
+   
+    if project is not None:
+         # Accédez aux relations et récupérez les données associées
+        comments = [comment.comments_lib for comment in project.comments]
+        # tasks = [task.task_name for task in project.tasks]
+        # resumes = [resume.resume_content for resume in project.resumes]
+        team = project.project_team
+        
+        #if team:
+        #    team_members = team.members
+        #    team_members_all = [member.name for member in team_members]
+        #    team_members_all.append(team_members.idproject_team)
+        #else:
+        #    team_members_all = []
+        
+        created_date = project.created_at.strftime("%Y-%m-%d")
+        expired_date = project.expired_at.strftime("%Y-%m-%d")
+        
+        project_data = {'idproject': project.idproject, 
+                        'project_name': project.project_name, 
+                        'description': project.project_description, 
+                        'expired_at': expired_date, 
+                        'created_at': created_date, 
+                        'status': project.project_status, 
+                        'requirement': project.requirement, 
+                        'progress': project.project_step,
+                        'comments': comments,
+                        'team': team
+                        }  
+        return jsonify(project_data)
+    else:
+        return jsonify({"error": "Projet non trouvé"}), 404
+    
 # Route pour modifier un projet, son status et son commentaire
-@app.route('/admin/cp/<int:idproject>', methods=['PUT'])
+@app.route('/admin/editp/<int:idproject>', methods=['PUT'])
 def update_project(idproject):
     data = request.get_json()
     
-    project = Project.query.get(idproject)
+    project = db.session.get(Project, idproject)
     
     if project is None:
         return jsonify({'message': "Projet inexistant"}), 404
     
-    if '_idproject_team' in data:
-        project._idproject_team = data['_idproject_team']
+    if 'team' in data:
+        project.project_team = data['team']
     if 'project_name' in data:
-        project.project_name = data['name']
+        project.project_name = data['project_name']
     if 'project_description' in data:
-        project.project_description = data['project_description']
+        project.project_description = data['description']
     if 'project_step' in data:
-        project.project_step = data['project_step']
+        project.project_step = data['progress']
     if 'expired_at' in data:
         project.expired_at = data['expired_at']
     if 'Requirement' in data:
-        project.Requirement = data['Requirement']
+        project.Requirement = data['requirement']
     if 'comments' in data:
-        project.comments[0].comments_lib =data['comments']
+        if project.comments:
+            project.comments[0].comments_lib = data['comments']
+        else:
+            if data['comments'] is None:
+                new_comment = Comments(comments_lib=data['comments'],project_idproject=idproject)
+                db.session.add(new_comment)
+                
+            project.comments=data['comments']
     if 'status_idstatus' in data:
         project.status_idstatus = data['status_idstatus']
+                
     db.session.commit()
     
     return jsonify({'message': 'Mise a jour effectue'}), 200
@@ -122,7 +168,7 @@ def delete_project(idproject):
     db.session.commit()
     return jsonify({'message': 'Projet supprime avec succes'}), 200
 
-# Liste des projeta
+# Liste des projets
 @app.route('/admin/projects', methods=['GET'])
 def list_project():
     projects = db.session.query(Project).all()
@@ -226,6 +272,20 @@ def add_members_to_team(idteam):
     except Exception as e:
         # Gérez les erreurs appropriées ici
         return jsonify({'message': 'Une erreur est survenue lors de l\'ajout du membre à l\'équipe'}), 500
+
+@app.route('/admin/teams', methods=['GET'])
+def list_team():
+    teams = ProjectTeam.query.all()
+    team_list = []
+    if teams:
+        for team in teams:
+            team_dict = {'idteam': team.idproject_team,
+                        'name': team.team_name
+                        }
+            team_list.append(team_dict)
+    else:
+        team_list = []
+    return jsonify(team_list)
 
 # Liste des projets d'une equipe
 @app.route('/admin/team/<int:idteam>/lp', methods=['GET'])

@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <NavBar />
     <div class="container-fluid">
       <div class="row">
-        <div class="sidebar col-md-3 col-lg-2 p-0">
+        <div class="sidebarMenu col-md-3 col-lg-2 p-0">
           <div class="offcanvas-md offcanvas-end " tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
             <div class="offcanvas-header">
               <h5 class="offcanvas-title" id="sidebarMenuLabel">Company name</h5>
@@ -65,21 +63,18 @@
               <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i>   Sign out</a></li>
             </ul>
             </div>
-        </div>
-        <div class="col-md-9 col-lg-12 content">
-          <router-view style="overflow-y: auto;"></router-view>
+          </div>
+        <div class="col-md-9 ms-sm-auto col-lg-12 px-md-4" style="margin-top: 50px;">
+          <router-view />
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
-import NavBar from './_Arche/NavBar'
 export default {
   name: 'HomePage',
   components: {
-    NavBar,
   },
   
 }
