@@ -4,10 +4,10 @@
           <div class="modal-content">
           <form @submit.prevent="submitForm">
             <div class="modal-body">
-              <div class="form-group">
+              <!--<div class="form-group">
                 <label for="code" class="col-form-label">Code :</label>
                 <input type="text" class="form-control" id="code" v-model="code" required>
-              </div>
+              </div>-->
               <div class="form-group">
                 <label for="name" class="col-form-label">Nom Projet :</label>
                 <input type="text" class="form-control" id="name" v-model="formData.project_name" required>
@@ -125,13 +125,5 @@ import {addProject} from '@/services/adminServices';
   .modal-body {
 
     padding: 20px 10px;
-  }
-
-
-  .btn-green {
-    color: white;
-    background: #4AAE9B;
-    border: 1px solid #4AAE9B;
-    border-radius: 2px;
   }
 </style>

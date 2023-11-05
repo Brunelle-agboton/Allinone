@@ -9,7 +9,13 @@ export const getListClient = () => {
 };
 
 export const getListProject = () => {
-  return apiUrl.get('/admin/projects');
+  return apiUrl.get('/admin/projects', {
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
 };
 
 export const addClient = (data) => {
@@ -28,7 +34,9 @@ export const getProject = (id) => {
 export const editProject = (id, data) => {
   return apiUrl.put(`/admin/editp/${id}`, data, {
     headers: {
-      'Content-Type': 'application/json', // Spécifiez le type de contenu
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Origin': '*',
     },
   });
 };

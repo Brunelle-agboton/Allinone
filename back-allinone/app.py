@@ -5,7 +5,7 @@ from flask_cors import CORS, cross_origin
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080", "credential": "true",  'Access-Control-Allow-Origin': '*',  'Access-Control-Allow-Headers': '*'}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Emmanuel_7@localhost/db_allinone'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
@@ -79,7 +79,7 @@ def create_project():
     data = request.get_json()
     
     new_project = Project(project_name=data['project_name'], project_description=data['project_description'], expired_at=data['expired_at'])
-    
+    print(new_project)
     db.session.add(new_project)
     db.session.commit()
     
@@ -90,7 +90,7 @@ def create_project():
 def get_project(idproject):
     # Recuperer le projet correspondant à l'ID
     project = db.session.get(Project, idproject)
-   
+
     if project is not None:
          # Accédez aux relations et récupérez les données associées
         comments = [comment.comments_lib for comment in project.comments]
@@ -127,39 +127,42 @@ def get_project(idproject):
 @app.route('/admin/editp/<int:idproject>', methods=['PUT'])
 def update_project(idproject):
     data = request.get_json()
-    
+    print(data)
     project = db.session.get(Project, idproject)
     
+
     if project is None:
         return jsonify({'message': "Projet inexistant"}), 404
-    
+        
     if 'team' in data:
         project.project_team = data['team']
     if 'project_name' in data:
         project.project_name = data['project_name']
     if 'project_description' in data:
         project.project_description = data['description']
-    if 'project_step' in data:
+    if 'progress' in data:
         project.project_step = data['progress']
     if 'expired_at' in data:
         project.expired_at = data['expired_at']
-    if 'Requirement' in data:
-        project.Requirement = data['requirement']
+    if 'requirement' in data:
+        #setattr(project,requirement,data['requirement'])
+        project.requirement = data['requirement']
     if 'comments' in data:
         if project.comments:
             project.comments[0].comments_lib = data['comments']
         else:
-            if data['comments'] is None:
+            if data['comments']:
                 new_comment = Comments(comments_lib=data['comments'],project_idproject=idproject)
                 db.session.add(new_comment)
                 
             project.comments=data['comments']
     if 'status_idstatus' in data:
         project.status_idstatus = data['status_idstatus']
-                
+    
+    db.session.add(project)            
     db.session.commit()
     
-    return jsonify({'message': 'Mise a jour effectue'}), 200
+    return jsonify(project), 200
 
 @app.route('/admin/cp/<int:idproject>/del', methods=['DELETE'])
 def delete_project(idproject):

@@ -3,8 +3,8 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-2 flex-1">
           <div class="table-row">
             <div class="table-cell">
-                <button type="button" class="btn-icon" @click="showModal" data-bs-toggle="modal" data-bs-target="#backdrop"><i class="bi bi-plus"></i>Ajouter</button>
-                <ProjectForm1 v-show="isModalVisible" @close="closeModal" />
+                <button type="button" class="btn-icon" @click="showModal"  @close="closeModal" data-bs-toggle="modal" data-bs-target="#backdrop" data-test="mod"><i class="bi bi-plus"></i>Ajouter</button>
+                <ProjectForm1 v-show="isModalVisible" />
               </div>
             <div class="table-cell">
                 <button class="btn-icon"><i class="bi bi-filetype-csv"></i></button>
@@ -39,7 +39,6 @@
         </div>
           </div>
         <div class="table-responsive">
-          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject">
 
           <table class="table table-striped table-sm">
             <thead class="head-content">
@@ -61,24 +60,27 @@
             </thead>
             <tbody>
               <!-- Utilisation de v-for pour afficher les projets -->
-        <tr>
-          <td class="checkbox-cell">
-            <input type="checkbox" :id="'row' + project.idproject">
-            <label :for="'row' + project.idproject"></label>
-          </td>
-          <td>{{ project.code }}</td>
-          <td>{{ project.name }}</td>
-          <td>{{ project.description }}</td>
-          <td>{{ project.created_at }}</td>
-          <td>{{ project.expired_at }}</td>
-          <td>{{ project.progress }}</td>
-          <td>{{ project.comments }}</td>
-          <td>{{ project.requirement }}</td>
-          <td>{{ project.status }}</td>
-        </tr>
+          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject">
+
+            <tr>
+              <td class="checkbox-cell">
+                <input type="checkbox" :id="'row' + project.idproject">
+                <label :for="'row' + project.idproject"></label>
+              </td>
+              <td>{{ project.code }}</td>
+              <td>{{ project.name }}</td>
+              <td>{{ project.description }}</td>
+              <td>{{ project.created_at }}</td>
+              <td>{{ project.expired_at }}</td>
+              <td>{{ project.progress }}</td>
+              <td>{{ project.comments }}</td>
+              <td>{{ project.requirement }}</td>
+              <td>{{ project.status }}</td>
+            </tr>
+      </a>
+
             </tbody>
           </table>
-      </a>
         </div>
       </main>
     </div>

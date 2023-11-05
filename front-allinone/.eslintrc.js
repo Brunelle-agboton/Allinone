@@ -1,18 +1,22 @@
 module.exports = {
     "env": {
         "browser": true,
-        "node": true
+        "node": true,
+        "jest": true
     },
     "extends": [
         "eslint:recommended",
-        "plugin:vue/essential"
+        "plugin:vue/essential",
+        'plugin:jest/recommended',
+
     ],
     "parserOptions": {
         "ecmaVersion": 12,
         "sourceType": "module"
     },
     "plugins": [
-        "vue"
+        "vue",
+        "jest"
     ],
     "rules": {
     }

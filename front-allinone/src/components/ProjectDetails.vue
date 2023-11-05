@@ -90,9 +90,13 @@
        </div>
       </div>
     </div>
-    <b-modal id="successModal" title="Modification réussie">
-      <!-- Affichez ici un message personnalisé, comme "Les modifications ont été enregistrées avec succès" -->
-    </b-modal>
+    <div class="modal detail-mod" v-if="showSuccessModal">
+      <div class="modal-content detail-cont">
+        <span class="close" @click="showSuccessModal = false">&times;</span>
+        <h2>Modification réussie</h2>
+        <p>Les modifications ont été enregistrées avec succès.</p>
+      </div>
+    </div>
   </main>
   </div>
 </template>
@@ -100,12 +104,10 @@
 <script>
 import {getProject, editProject, getTeams} from '@/services/adminServices';
 import { mapState } from 'vuex';
-import { BModal } from 'bootstrap-vue'
 
 
 export default {
   name: 'ProjectDetails',
-  components:{BModal},
   data() {
     return {
       project: {
@@ -114,6 +116,7 @@ export default {
       prochainesReunions: ['Réunion 1', 'Réunion 2'],
       rapportsDuProjet: ['Rapport 1', 'Rapport 2'],
       dernieresTachesEffectuees: ['Tâche 1', 'Tâche 2'],
+      showSuccessModal: false,
     };
   },
   computed: {
@@ -134,19 +137,13 @@ export default {
     enregistrerModifications() {
       editProject(this.project.idproject, this.project)
       .then(response => {
-        console.log(response);
-        if (response.status == 200)
-          // Modifications réussies, afficher le message et les détails
-          this.$bvModal.show('successModal'); // Affiche le modal de succès
+        if (response.status == 200) {
+          this.$showSuccessModal = true; // Affiche le modal de succès
             // Mettez à jour les détails du projet (chargez à nouveau le projet avec getProject)
-            getProject(this.project.idproject).then(response => {
-              if (response.status === 200) {
-                this.project = response.data;
-              }
-            });
+        }
       })
       .catch(error => {
-      console.error('Erreur ', error);
+        console.error('Erreur ', error);
     });
     },
   },
