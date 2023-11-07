@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ProjectDetails from './components/ProjectDetails.vue';
+import ClientsDetail from './components/ClientsDetail.vue';
+import TeamDetail from './components/TeamDetail.vue';
 
 
 export default createRouter({
@@ -33,15 +35,23 @@ export default createRouter({
     },
 
     {
-      path: '/cld',
+      path: '/cld/:id',
       name: 'ClientsDetail',
-      component: () => import('./components/ClientsDetail.vue'),
+      component: ClientsDetail,
+      props: true,
+
     },
     
     {
       path: '/teams',
       name: 'TeamPage',
       component: () => import('./components/TeamPage.vue'), 
+    },
+    {
+      path: '/teamdetail/:id',
+      name: 'TeamDetail',
+      component: TeamDetail, 
+      props: true,
     },
     {
       path: '/cl',

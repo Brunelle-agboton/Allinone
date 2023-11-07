@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import {getProject, editProject, getTeams} from '@/services/adminServices';
+import {getProject, editProject, delProject, getTeams} from '@/services/adminServices';
 import { mapState } from 'vuex';
 
 
@@ -132,6 +132,12 @@ export default {
     },
 
     supprimerProjet() {
+      delProject(this.project.idproject)
+      .then(response => {
+        if(response.status == 200){
+          alert('Le projet a bien été supprimé');
+        }
+      })
     },
 
     enregistrerModifications() {

@@ -41,9 +41,17 @@ export const editProject = (id, data) => {
   });
 };
 
+export const delProject = (id) => {
+  return apiUrl.delete(`/admin/delp/${id}`);
+};
+
 /* Team*/
 export const getTeams = () => {
   return apiUrl.get('/admin/teams');
+};
+
+export const addTeam = (data) => {
+  return apiUrl.post('/admin/team', data);
 };
 
 apiUrl

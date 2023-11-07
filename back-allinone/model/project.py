@@ -99,7 +99,7 @@ class ProjectTeam(db.Model):
     idproject_team = db.Column(db.Integer, primary_key=True, autoincrement=True)
     team_name = db.Column(db.String(45))
     team_description = db.Column(db.String(64))
-    created_at = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     last_modified = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     

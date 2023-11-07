@@ -135,7 +135,9 @@ def update_project(idproject):
         return jsonify({'message': "Projet inexistant"}), 404
         
     if 'team' in data:
-        project.project_team = data['team']
+        project_team = db.session.query(ProjectTeam).filter_by(team_name=data['team']).first()
+        if project_team is not None:
+            project.project_team = project_team
     if 'project_name' in data:
         project.project_name = data['project_name']
     if 'project_description' in data:
@@ -164,7 +166,7 @@ def update_project(idproject):
     
     return jsonify(project), 200
 
-@app.route('/admin/cp/<int:idproject>/del', methods=['DELETE'])
+@app.route('/admin/delp/<int:idproject>', methods=['DELETE'])
 def delete_project(idproject):
     project = Project.query.get(idproject)
     db.session.delete(project)
@@ -202,7 +204,7 @@ def create_team():
     new_team = ProjectTeam(team_name=data['team_name'], team_description=['team_description'], )
     db.session.add(new_team)
     db.session.commit()
-    return jsonify({'message': 'Team created successfully'}), 201
+    return jsonify({'message': 'Team created successfully'}), 200
 
 # Retirer un membre d'une equipe
 @app.route('/admin/team/<int:idteam>/delete', methods=['DELETE'])
@@ -283,7 +285,9 @@ def list_team():
     if teams:
         for team in teams:
             team_dict = {'idteam': team.idproject_team,
-                        'name': team.team_name
+                        'name': team.team_name,
+                        'description': team.team_description,
+                        'created_at': team.created_at,
                         }
             team_list.append(team_dict)
     else:

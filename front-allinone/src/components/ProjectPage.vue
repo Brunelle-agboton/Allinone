@@ -6,41 +6,41 @@
                 <button type="button" class="btn-icon" @click="showModal"  @close="closeModal" data-bs-toggle="modal" data-bs-target="#backdrop" data-test="mod"><i class="bi bi-plus"></i>Ajouter</button>
                 <ProjectForm1 v-show="isModalVisible" />
               </div>
-            <div class="table-cell">
-                <button class="btn-icon"><i class="bi bi-filetype-csv"></i></button>
+              <div class="table-cell">
+                  <button class="btn-icon"><i class="bi bi-filetype-csv"></i></button>
+              </div>
+              <div class="table-cell">
+                  <button class="btn-icon"><i class="bi bi-funnel-fill"></i> Filtrer</button>
+                  <input type="text" class="col-lg-4">
+              </div>
+              <div class="table-cell col-lg-4 search">
+                  <input type="text" placeholder="Rechercher..." class="col-lg-8">
+                  <button class="btn-icon"><i class="bi bi-search"></i></button>
             </div>
-            <div class="table-cell">
-                <button class="btn-icon"><i class="bi bi-funnel-fill"></i> Filtrer</button>
-                <input type="text" class="col-lg-4">
-            </div>
-            <div class="table-cell col-lg-4 search">
-                <input type="text" placeholder="Rechercher..." class="col-lg-8">
-                <button class="btn-icon"><i class="bi bi-search"></i></button>
-            </div>
-        <div class="table-cell">
-            <label for="itemsPerPage">Afficher </label>
-            <select id="itemsPerPage">
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-            </select>
-        </div>
-        <div class="table-cell">
-            <button class="btn-icon imprimer"><i class="bi bi-printer"></i></button>
-        </div>
-        <div class="table-cell pagination">
-            <span>elements</span>
-            <button class="btn-icon"><i class="bi bi-chevron-double-left"></i></button>
-            <button class="btn-icon"><i class="bi bi-chevron-left"></i></button>
-            <span class="page-number">1</span>
-            <span class="page-number">2</span>
-            <button class="btn-icon"><i class="bi bi-chevron-right"></i></button>
-            <button class="btn-icon"><i class="bi bi-chevron-double-right"></i></button>
-        </div>
+          <div class="table-cell">
+              <label for="itemsPerPage">Afficher </label>
+              <select id="itemsPerPage">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+              </select>
           </div>
+          <div class="table-cell">
+              <button class="btn-icon imprimer"><i class="bi bi-printer"></i></button>
+          </div>
+          <div class="table-cell pagination">
+              <span>elements</span>
+              <button class="btn-icon"><i class="bi bi-chevron-double-left"></i></button>
+              <button class="btn-icon"><i class="bi bi-chevron-left"></i></button>
+              <span class="page-number">1</span>
+              <span class="page-number">2</span>
+              <button class="btn-icon"><i class="bi bi-chevron-right"></i></button>
+              <button class="btn-icon"><i class="bi bi-chevron-double-right"></i></button>
+          </div>
+           </div>
         <div class="table-responsive">
 
-          <table class="table table-striped table-sm">
+          <table class="table  table-sm">
             <thead class="head-content">
               <tr>
                 <th class="checkbox-cell">
@@ -77,7 +77,7 @@
               <td>{{ project.requirement }}</td>
               <td>{{ project.status }}</td>
             </tr>
-      </a>
+          </a>
 
             </tbody>
           </table>
