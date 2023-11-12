@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8080", "credential": "true",  'Access-Control-Allow-Origin': '*',  'Access-Control-Allow-Headers': '*'}})
+CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True}})
 bcrypt = Bcrypt(app)
 
 
@@ -25,6 +25,13 @@ from model.project import *
 @app.route('/', methods = ['Get'])
 def hello_world():
     return 'Hello, World!'
+
+@app.after_request
+def after_request(response):
+  response.headers['Access-Control-Allow-Methods']='*'
+  response.headers['Access-Control-Allow-Origin']='*'
+  response.headers['Vary']='Origin'
+  return response
 #*****************************************************************Vue Admin******************************************
 ##################### Gestion des membres ############################
 @app.route('/admin/mem', methods=['POST'])
@@ -41,12 +48,19 @@ def add_member():
     try:
         db.session.add(new_member)
         db.session.commit()
-        return jsonify({'message': 'Membre créé avec succès', 'member_id': new_member.idmember}), 201
+        return jsonify({'message': 'Membre créé avec succès'}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
 
-    
+@app.route('/admin/members', methods=['GET'])
+def get_members():
+    members = Member.query.all()
+    output = []
+    for member in members:
+        member_data = {'idmember': member.idmember,'username': member.username}
+        output.append(member_data)
+    return jsonify(output)
 ##################### Clients ############################
 # Ajouter un nouveau client
 @app.route('/admin/client', methods=['POST'])
@@ -162,7 +176,7 @@ def get_project(idproject):
 @app.route('/admin/editp/<int:idproject>', methods=['PUT'])
 def update_project(idproject):
     data = request.get_json()
-    print(data)
+    #print(data)
     project = db.session.get(Project, idproject)
     
 
@@ -250,38 +264,28 @@ def delete_team(idteam):
     return jsonify({'message': 'Team supprime avec succes'}), 200
 
 # Retirer un membre d'une equipe
-@app.route('/admin/team/<int:idteam>/delete', methods=['DELETE'])
-def delete_member_to_team(idteam):
-    try:
-        team = ProjectTeam.query.get(idteam)
-        if not team:
-            return jsonify({'message': 'L\'équipe n\'existe pas'}), 404
+@app.route('/admin/team/<int:idteam>/del/<int:idmember>', methods=['DELETE'])
+@cross_origin()
+def delete_member_to_team(idteam, idmember):
+    print(request)
+    team = db.session.get(ProjectTeam, idteam)
+    if not team:
+        return jsonify({'message': 'L\'équipe n\'existe pas'}), 404
+    
+    member = db.session.get(Member, idmember)
         
-        # Récupérez les données du membre à ajouter depuis la requête POST
-        data = request.get_json()
-        username = data['username'] 
+    if not member:
+        return jsonify({'message': 'Le membre n\'existe pas'}), 404
 
-        if not username:
-            return jsonify({'message': 'L\'username du membre est requis'}), 400
-        # Recherche du membre par son nom
-        member = Member.query.filter_by(username=username).first()
-        
-        if not member:
-            return jsonify({'message': 'Le membre n\'existe pas'}), 404
-
-        team_member_relation = ProjectTeamHasMember.query.filter_by(
-            project_team_idproject_team=team.idproject_team,
-            member_idmember=member.idmember
-        ).first()
-        db.session.delete(team_member_relation)
-        db.session.commit()
-        
-        return jsonify({'message': 'Membre retire de l\'équipe avec succès'}), 201
-
-    except Exception as e:
-        # Gérez les erreurs appropriées ici
-        return jsonify({'message': 'Une erreur est survenue lors de la supression du membre à l\'équipe'}), 500
-
+    team_member_relation = ProjectTeamHasMember.query.filter_by(
+        project_team_idproject_team=team.idproject_team,
+        member_idmember=member.idmember
+    ).first()
+    db.session.delete(team_member_relation)
+    db.session.commit()
+    
+    return jsonify({'message': 'Membre retire de l\'équipe avec succès'}), 201
+    
 # Ajouter un membre a une equipe
 @app.route('/admin/team/<int:idteam>', methods=['POST'])
 def add_members_to_team(idteam):
@@ -342,7 +346,6 @@ def list_team():
 def get_team(idteam):
     
     team =  db.session.get(ProjectTeam, idteam)
-    print(team)
     if team is not None:
         #Récupérer tous les projets de l'équipe
         projects = Project.query.filter(Project._idproject_team == idteam).all()
@@ -353,7 +356,7 @@ def get_team(idteam):
         
         #Récupérer tous les membres de l'équipe   
         team_members = team.members
-        team_members_all = [{'idmember': member.idmember, 'member_name': member.name} for member in team_members]
+        team_members_all = [{'idmember': member.idmember, 'username': member.username} for member in team_members]
         #Récupérer les champs de l'équipe et ajouter les données précedemment récupérées
         team_data = {
             'idproject_team': team.idproject_team,
@@ -369,6 +372,39 @@ def get_team(idteam):
         return jsonify(team_data), 200
     else:
         return jsonify({'message': 'Une erreur est survenue lors de la recuperation des liste de l\'équipe'}), 500
+
+#Mettre a jour une equipe
+@app.route('/admin/editeq/<int:idteam>', methods=['PUT'])
+@cross_origin()
+def update_team(idteam):
+    data = request.get_json()
+    print(request)
+    # Récupérer les détails de l'équipe depuis la base de données
+    team =  db.session.get(ProjectTeam, idteam)
+    if team is None:
+        return jsonify({'message': "Team inexistant"}), 404
+    
+    if 'team_name' in data:
+        team.team_name = data['team_name']
+    if 'team_description' in data:
+        team.team_description = data['team_description']
+    if 'members' in data:
+        members_ids = data['members']
+        team.members = [db.session.get(Member, member_id) for member_id in members_ids]
+
+        #for member in members:
+    db.session.add(team)            
+    db.session.commit()
+    
+    team_data = {
+            'idproject_team': team.idproject_team,
+            'team_name': team.team_name,
+            'team_description': team.team_description,
+            'created_at': team.created_at.strftime("%Y-%m-%d"),
+            'updated_at': team.updated_at.strftime("%Y-%m-%d"),
+        }
+    
+    return jsonify(team_data), 200
 
 ##################### Stats ############################
 

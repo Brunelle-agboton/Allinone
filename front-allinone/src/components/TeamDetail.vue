@@ -4,11 +4,11 @@
       <div class="col-md-6">
         <div class="row">
           <div class="card mr-4">
-          <div class="card-header">Détails du Projet</div>
+          <div class="card-header">Détails de l'equipe</div>
           <div class="card-body">
             <form>
               <div class="mb-3">
-                <label for="identif" class="form-label">Client du Projet</label>
+                <label for="identif" class="form-label">identifiant de l'equipe</label>
                 <input type="text" class="form-control" id="identif" v-model="team.idproject_team">
               </div>
               <div class="mb-3">
@@ -20,24 +20,19 @@
                 <input type="text" class="form-control" id="desc" v-model="team.team_description">
               </div>
               <div class="mb-3">
-                <label for="members">Sélectionnez des valeurs :</label>
-                <select
-                  id="members"
-                  v-model="team.idmember"
-                  multiple
-                  @change="updateDisplayValues"
-                >
-                  <option v-for="member in membres" :key="member.idmember" :value="member.member_name">
-                    {{ member.member_name }}
-                  </option>
-                </select>
-
-                <div>
-                  <label for="displayedValues">Les membres de l'equipe :</label>
-                  <div id="displayedValues">
-                    {{ displayedValues.join(', ') }}
-                  </div>
-                </div>
+                <label for="membre" class="col">Les membres de l'équipe :</label>
+                    <ul>
+                      <li v-for="(member, index) in team.members" :key="member.idmember">
+                        {{ member.username }}
+                        <span @click="supprimerMembre(index)" style="cursor: pointer;">
+                          <i class="bi bi-x-circle"></i>
+                        </span>
+                      </li>
+                    </ul>
+                <select class="form-control" id="membre" v-model="selectedMember">
+                  <option value="">Sélectionnez un membre</option>
+                  <option v-for="member in membres" :key="member.idmember" :value="member.idmember">{{ member.username }}</option>
+                </select> 
               </div>
               <div class="mb-3">
                 <label for="debut" class="form-label">Debuter le</label>
@@ -76,14 +71,20 @@
   </template>
   
   <script>
-  import {getTeam, editTeam, delTeam} from '@/services/adminServices';
+  import {getTeam, editTeam, delTeam, getMembers, delMemberOfTeam} from '@/services/adminServices';
   import { mapState } from 'vuex';
 
   export default {
     name: 'TeamDetail',
     data() {
       return {
-        team: {},
+        team: {
+          members: [{
+            idmember: "",
+            username: "",
+          }
+        ],
+        },
         projet: [{
           id: "",
           project_name: "",
@@ -92,11 +93,10 @@
         membres: [
           {
             idmember: "",
-            member_name: "",
+            username: "",
           }
         ],
-        selectedValues: [],
-        displayedValues: [],
+        selectedMember: null,
         prochainesReunions: [],
       }
     },
@@ -106,39 +106,57 @@
   },
   methods: {
     
-    confirmerSuppressionProjet() {
+    confirmerSuppressionTeam() {
     if (window.confirm("Voulez-vous vraiment supprimer ce projet ?")) {
       // Logique de suppression de la team ici
       this.supprimerProjet();
     }
     },
 
-    supprimerProjet() {
-      delTeam(this.project.idproject)
+    supprimerTeam() {
+      delTeam(this.team.idproject_team)
       .then(response => {
         if(response.status == 200){
           alert('La team a bien été supprimée');
         }
       })
     },
+    supprimerMembre(index) {
+    if (window.confirm("Voulez-vous vraiment supprimer ce membre de l'équipe ?")) {
+      console.log(this.team.members[0].idmember);
 
+      delMemberOfTeam(this.team.idproject_team,this.team.members[index].idmember)
+      .then(response => {
+        console.log(response.data);
+        if(response.status == 201){
+          this.team.members.splice(index, 1); // Supprime le membre à l'index spécifié
+          alert('Le membre a bien été ajouté à cette équipe');
+        }
+      })
+      .catch(error => {
+        console.error('Erreur ', error);
+      });
+
+    }
+    },
+ 
     enregistrerModifications() {
-      editTeam(this.team.idproject_team, this.team)
+      this.team.members.push({ idmember: this.selectedMember });
+      console.log(this.team);
+
+      editTeam(this.team.idproject_team, this.team,{
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       .then(response => {
         if (response.status == 200) {
-          this.$showSuccessModal = true; // Affiche le modal de succès
+          console.log(response);
         }
       })
       .catch(error => {
         console.error('Erreur ', error);
     });
-    },
-    updateDisplayValues() {
-      // Mettez à jour les valeurs affichées chaque fois que la sélection change
-      this.displayedValues = this.selectedValues.map((member_name) => {
-        const selectedOption = this.membres.find((member) => member.member_name === member_name);
-        return selectedOption ? selectedOption.member_name : '';
-      });
     },
   },
   mounted() {
@@ -148,12 +166,28 @@
       if (response.status == 200)
         this.team = response.data;
         this.projet = this.team.projets;
-        this.membres = this.team.members
-        console.log(this.team.members);
+        console.log(this.team);
+      
     })
     .catch(error => {
       console.error('Erreur ', error);
     });
+    getMembers()
+      .then(response => {
+        if (response.status === 200) {
+          if (this.team.members && this.team.members.length > 0) {
+            this.membres = response.data.filter(member => !this.team.members.includes(member));
+          } else {
+            // Si team_members n'est pas défini ou est vide, alors tous les membres sont disponibles
+            this.membres = response.data;
+          }        } 
+      else {
+          console.error('Erreur', response);
+        }
+      })
+      .catch(error => {
+        console.error('Erreur', error);
+      });
   },
   }
   </script>

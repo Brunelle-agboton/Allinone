@@ -69,4 +69,16 @@ export const editTeam = (id, data) => {
 export const delTeam = (id) => {
   return apiUrl.delete(`/admin/delt/${id}`);
 };
+
+export const getMembers = () => {
+  return apiUrl.get(`/admin/members `);
+};
+
+export const delMemberOfTeam = (idt,idm) => {
+  return apiUrl.delete(`/admin/team/${idt}/del/${idm}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
 apiUrl
