@@ -61,10 +61,8 @@
     </div>
    
     <table class="table">
-      <router-link v-for="(row, index) in tableData"
-      :to="'/teamdetail/' + row.idteam" 
-      :key="index">
-      <thead class="bg-royal-blue text-white">
+      
+      <thead>
         <tr>
           <th>code</th>
           <th>Nom de l'equipe</th>
@@ -72,8 +70,10 @@
           <th>Cree le </th>
         </tr>
       </thead>
+      <router-link v-for="(row, index) in tableData"
+      :to="'/teamdetail/' + row.idteam" 
+      :key="index">
       <tbody>
-        <!-- Boucle sur les lignes de données -->
         <tr >
           <td>{{ row.idteam }}</td>
           <td>{{ row.name }}</td>

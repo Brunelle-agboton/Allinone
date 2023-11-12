@@ -1,4 +1,4 @@
-from app import db
+from app import db, bcrypt
 
 
 class Project(db.Model):
@@ -43,7 +43,6 @@ class Meeting(db.Model):
     client_user = db.relationship("ClientUser", primaryjoin="Meeting._idclient_user == ClientUser.idclient_user", back_populates="meetings")
     # project = db.relationship("Project", back_populates="meetings")
     project_team = db.relationship("ProjectTeam", back_populates="meetings")
-
 
 class ClientUser(db.Model):
     __tablename__ = 'client_user'
@@ -115,10 +114,16 @@ class Member(db.Model):
     idmember = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(16), nullable=False)
     email = db.Column(db.String(255))
-    password = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(64), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    def set_password(self, passw):
+        self.password = bcrypt.generate_password_hash(passw).decode('utf-8')
 
-    # Définir les relations avec les autres tables
+    def check_password(self, passw):
+        return bcrypt.check_password_hash(self.password, passw)
+
+
     roles = db.relationship("Role", secondary='member_has_role', back_populates="members")
     domains = db.relationship("Domain", secondary='member_has_domain', back_populates="members")
     tasks = db.relationship("Tasks", secondary='member_has_tasks', back_populates="members", secondaryjoin="Member.idmember == member_has_tasks.c.member_idmember")

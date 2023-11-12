@@ -23,10 +23,12 @@
               </div>
               <div class="mb-3">
                 <label for="equipe" class="form-label">Équipe de Gestion</label>
-                <select class="form-control" id="equipe" v-model="project.team">
+                <select class="form-control" id="equipe" v-model="project.team.idproject_team">
                   <option value="">Sélectionnez une équipe</option>
                   <option v-for="t in teams" :key="t.idproject_team" :value="t.name">{{ t.name }}</option>
                 </select>
+                {{ project.team.team_name }}
+
               </div>
               <div class="mb-3">
                 <label for="commentaire" class="form-label">Commentaire</label>
@@ -111,6 +113,10 @@ export default {
   data() {
     return {
       project: {
+        team: {
+        idproject_team: null,
+        team_name: ""
+      },
       },
       teams: [],
       prochainesReunions: ['Réunion 1', 'Réunion 2'],
@@ -120,7 +126,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(['modifications'])
+    ...mapState(['modifications']),
+
   },
   methods: {
     
@@ -145,7 +152,6 @@ export default {
       .then(response => {
         if (response.status == 200) {
           this.$showSuccessModal = true; // Affiche le modal de succès
-            // Mettez à jour les détails du projet (chargez à nouveau le projet avec getProject)
         }
       })
       .catch(error => {
@@ -159,7 +165,7 @@ export default {
     .then(response => {
       if (response.status == 200)
         this.project = response.data
-        // console.log(this.project);
+         // console.log(this.project.team);
     })
     .catch(error => {
       console.error('Erreur ', error);

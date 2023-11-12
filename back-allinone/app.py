@@ -1,11 +1,16 @@
 from flask import Flask, request, jsonify
+from flask_bcrypt import Bcrypt
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
 
 
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:8080", "credential": "true",  'Access-Control-Allow-Origin': '*',  'Access-Control-Allow-Headers': '*'}})
+bcrypt = Bcrypt(app)
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Emmanuel_7@localhost/db_allinone'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
@@ -20,7 +25,28 @@ from model.project import *
 @app.route('/', methods = ['Get'])
 def hello_world():
     return 'Hello, World!'
-#*****************************************************************Vue Admin******************************************#
+#*****************************************************************Vue Admin******************************************
+##################### Gestion des membres ############################
+@app.route('/admin/mem', methods=['POST'])
+def add_member():
+    data = request.get_json()
+
+    if 'username' not in data or 'password' not in data or 'email' not in data:
+        return jsonify({'message': 'Le nom d\'utilisateur et le mot de passe sont requis'}), 400
+
+    new_member = Member(username=data['username'], email=data.get('email'))
+    new_member.set_password(data['password'])
+
+    
+    try:
+        db.session.add(new_member)
+        db.session.commit()
+        return jsonify({'message': 'Membre créé avec succès', 'member_id': new_member.idmember}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
+
+    
 ##################### Clients ############################
 # Ajouter un nouveau client
 @app.route('/admin/client', methods=['POST'])
@@ -96,8 +122,17 @@ def get_project(idproject):
         comments = [comment.comments_lib for comment in project.comments]
         # tasks = [task.task_name for task in project.tasks]
         # resumes = [resume.resume_content for resume in project.resumes]
-        team = project.project_team
-        
+        if project.project_team:
+            team_data = {
+                'idproject_team': project.project_team.idproject_team,
+                'team_name': project.project_team.team_name,
+                'team_description': project.project_team.team_description,
+                'created_at': project.project_team.created_at.strftime("%Y-%m-%d"),
+                'updated_at': project.project_team.updated_at.strftime("%Y-%m-%d")
+                # Ajoutez d'autres champs si nécessaire
+            }
+        else:
+            team_data = None
         #if team:
         #    team_members = team.members
         #    team_members_all = [member.name for member in team_members]
@@ -117,7 +152,7 @@ def get_project(idproject):
                         'requirement': project.requirement, 
                         'progress': project.project_step,
                         'comments': comments,
-                        'team': team
+                        'team': team_data
                         }  
         return jsonify(project_data)
     else:
@@ -205,6 +240,14 @@ def create_team():
     db.session.add(new_team)
     db.session.commit()
     return jsonify({'message': 'Team created successfully'}), 200
+
+#Supprimer une equipe
+@app.route('/admin/delt/<int:idteam>', methods=['DELETE'])
+def delete_team(idteam):
+    team = ProjectTeam.query.get(idteam)
+    db.session.delete(team)
+    db.session.commit()
+    return jsonify({'message': 'Team supprime avec succes'}), 200
 
 # Retirer un membre d'une equipe
 @app.route('/admin/team/<int:idteam>/delete', methods=['DELETE'])
@@ -295,14 +338,36 @@ def list_team():
     return jsonify(team_list)
 
 # Liste des projets d'une equipe
-@app.route('/admin/team/<int:idteam>/lp', methods=['GET'])
-def get_team_projects(idteam):
-    try:
+@app.route('/admin/team/<int:idteam>', methods=['GET'])
+def get_team(idteam):
+    
+    team =  db.session.get(ProjectTeam, idteam)
+    print(team)
+    if team is not None:
+        #Récupérer tous les projets de l'équipe
         projects = Project.query.filter(Project._idproject_team == idteam).all()
-        project_list = [{'id': project.idproject, 'name': project.project_name, 'description': project.project_description} for project in projects]
+        if projects is not None:
+            project_list = [{'id': project.idproject, 'name': project.project_name, 'description': project.project_description} for project in projects]
+        else:
+            project_list = []
+        
+        #Récupérer tous les membres de l'équipe   
+        team_members = team.members
+        team_members_all = [{'idmember': member.idmember, 'member_name': member.name} for member in team_members]
+        #Récupérer les champs de l'équipe et ajouter les données précedemment récupérées
+        team_data = {
+            'idproject_team': team.idproject_team,
+            'team_name': team.team_name,
+            'team_description': team.team_description,
+            'created_at': team.created_at.strftime("%Y-%m-%d"),
+            'updated_at': team.updated_at.strftime("%Y-%m-%d"),
+            'nb_projet': len(projects),
+            'projets': project_list,
+            'members': team_members_all,
+        }
 
-        return jsonify(projects=project_list), 200
-    except Exception as e:
+        return jsonify(team_data), 200
+    else:
         return jsonify({'message': 'Une erreur est survenue lors de la recuperation des liste de l\'équipe'}), 500
 
 ##################### Stats ############################
