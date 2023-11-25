@@ -1,5 +1,7 @@
+import os
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
+from dotenv import load_dotenv
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
@@ -8,16 +10,21 @@ from flask_cors import CORS, cross_origin
 
 
 app = Flask(__name__)
-CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True}})
+load_dotenv()
+
+CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8081", "supports_credentials": True}})
 bcrypt = Bcrypt(app)
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Emmanuel_7@localhost/db_allinone'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+# Configurer la base de données SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
+
 db = SQLAlchemy()
 
-# Lancement du Débogueur
-app.config["DEBUG"] = True
+# Configurer l'environnement de développement
+app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
+app.config['FLASK_DEBUG'] = os.getenv('FLASK_DEBUG')
 
 from model.project import *
 

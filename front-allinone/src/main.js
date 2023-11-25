@@ -9,8 +9,6 @@ import router from './router';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import 'bootstrap-icons/font/bootstrap-icons.css'
-// Importer le module JavaScript Bootstrap 
-import 'bootstrap/dist/js/bootstrap.js';
 
   const app = createApp(App);
   app.use(Dialog);

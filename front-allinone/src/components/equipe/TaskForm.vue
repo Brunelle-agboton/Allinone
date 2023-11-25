@@ -14,34 +14,7 @@
       <button @click="saveTask">Save</button>
   </div>
   </template>
-  
-  <script>
-  export default {
-    name: 'TaskForm',
-    props: {
-      task: Object,
-    },
-    data() {
-      return {
-        editedTask: { ...this.task }, // Créez une copie de la tâche pour éviter la mutation directe
-      };
-    },
-    methods: {
-      saveTask() {
-        // Gérez la logique de sauvegarde en utilisant this.editedTask
-      },
-    },
-  };
-  </script>
-  Dans ce code, j'ai ajouté une propriété editedTask dans les données du composant, initialisée avec une copie de la tâche reçue en tant que prop. Vous pouvez ensuite utiliser this.editedTask dans vos méthodes sans modifier directement la prop task. Cette approche vous aidera à éviter la mutation directe des props.
-  
-  
-  
-  
-  
-  
-  
-  <script>
+<script>
 export default {
   name: 'TaskForm',
   props: {
@@ -68,7 +41,7 @@ export default {
 </script>
 
   
-  <style scoped>
+  <style>
   .task-form {
     border: 1px solid #ccc;
     padding: 10px;

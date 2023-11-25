@@ -60,9 +60,10 @@
             </thead>
             <tbody>
               <!-- Utilisation de v-for pour afficher les projets -->
-          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject" class="p-a">
 
             <tr>
+          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject" class="p-a">
+
               <td class="checkbox-cell">
                 <input type="checkbox" :id="'row' + project.idproject">
                 <label :for="'row' + project.idproject"></label>
@@ -76,8 +77,9 @@
               <td>{{ project.comments }}</td>
               <td>{{ project.requirement }}</td>
               <td>{{ project.status }}</td>
+            </a>
             </tr>
-          </a>
+          
 
             </tbody>
           </table>

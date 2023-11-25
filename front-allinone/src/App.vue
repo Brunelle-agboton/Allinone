@@ -2,7 +2,6 @@
   <div>
     <NavBar />
     <HomePage/>
-
   </div>
 </template>
 

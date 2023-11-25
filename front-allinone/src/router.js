@@ -9,6 +9,11 @@ import BoardPage from './components/equipe/BoardPage.vue'
 export default createRouter({
   history: createWebHistory(),
   routes: [
+    /*{
+      path: '/',
+      name: 'App',
+      component: () => import('./App.vue'),
+    },*/
     {
       path: '/home',
       name: 'HomePage',

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { TaskForm } from "@/components/equipe/TaskForm.vue";
+import TaskForm from "@/components/equipe/TaskForm.vue";
 
 export default {
   name: 'List-item',
