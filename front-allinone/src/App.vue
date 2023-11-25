@@ -1,13 +1,13 @@
 <template>
   <div>
     <NavBar />
-  <HomePage/>
+    <HomePage/>
 
   </div>
 </template>
 
 <script>
-import HomePage from './components/HomePage.vue'
+import HomePage from './components/_Arche/HomePage.vue'
 import NavBar from './components/_Arche/NavBar.vue'
 
 export default {

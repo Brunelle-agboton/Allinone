@@ -1,19 +1,17 @@
 /**/
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;  
-    background-color: blue;
+    background-color: red;
   }
-  .bi {
-      vertical-align: -.125em;
-      fill: currentColor;
-  }
-  
-/*************************** HomePage Style **********************************/
 .bi {
+    vertical-align: -.125em;
+    fill: currentColor;
     display: inline-block;
     width: 1rem;
     height: 1rem;
-  }
+}
+
+/*************************** HomePage Style **********************************/
   p{
     margin-right: 61px;
   }
@@ -108,22 +106,47 @@
 
 
 /*************************** DashboardPage Style **********************************/
-.card {
+.dash-card {
     border: 10 solid #002060 !important;
-    width:20rem;
-    height: 70vh;
-    margin-left: 50px;
+    margin-left: 40px;
     margin-top: 50px;
     margin-bottom: 50px;
     justify-content: right;
-    background: #002060;
+    background-color: #002060;
   
+    .card {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
   }
-  .container .row {
-    margin-left: 10em;
+  .status {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 3px;
+    color: #002060;
+  }
+  .c-t {
+    text-align: center;
+    text-transform: capitalize;
+    color: #002060 !important;
+  }
+.dash-row {
     justify-content: center;
-  }
-  
+}
+.legend-circle,.carousel-caption {
+  width: 10px; /* Ajustez la largeur du cercle selon vos besoins */
+  height: 10px; /* Ajustez la hauteur du cercle selon vos besoins */
+  border-radius: 30%; /* Rend le bord du cercle arrondi */
+  background-color: #007bff; /* Couleur de fond du cercle, ajustez-la selon vos besoins */
+  border: 2px solid #007bff; /* Bordure du cercle, ajustez-la selon vos besoins */
+  margin-right: 5px; /* Marge entre les cercles, ajustez-la selon vos besoins */
+}
+
+.legends-container {
+  display: flex;
+  justify-content: center;
+}
+
 /***************************** ProjectPage Style ********************************/
 
 .table-row {
@@ -173,13 +196,13 @@
     margin: 0 10px;
 }
 /** Table**/
-table {
+.project-table {
   border: 4px solid #002060;
   border-collapse: collapse;
   width: 100%;
 }
 /* Ajouter une couleur de fond à l'en-tête du tableau */
-thead {
+.p-t-head {
   text-align: left;
   padding: 8px;
   background-color: #002060;
@@ -222,11 +245,11 @@ th, td {
   background-color: #002060;
   border: 1px solid #002060;
 }
-a {
+.p-a {
     color: #002060;
     text-decoration: none;
 }
-a:hover {
+.p-a:hover {
   color: #779933;
   background-color: bisque;
 }
@@ -269,6 +292,9 @@ a:hover {
 }
 /*************************** ClientsPage Style **********************************/
 
+.client-page{
+  background-color: brown;
+}
 .client-list {
     margin: 5em;
     flex-wrap: wrap;
@@ -345,11 +371,6 @@ a:hover {
 /*************************** CompanyPage Style **********************************/
 /*************************** Connexion Style**********************************/
 
-html,
-body {
-  height: 100%;
-}
-
 body {
   align-items: center;
   padding-top: 40px;
@@ -383,17 +404,74 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-button {
-  background: #9A7029;
-}
-.container {
+.con-foot {
   width: auto;
   max-width: 680px;
   padding: 0 15px;
+  margin-bottom: 0% !important;
+  position: fixed;
+  background-color: #d9d9d9;
+
 }
 
-footer {
-  background-color: #d9d9d9;
+/****************************Vue Equipe projet*********************************/
+
+/** TaskPage.vue*/
+.task {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
 }
-/*************************************************************/
+.team-layout {
+}
+
+/** Board.Vue*/
+.list-style {
+  margin-right: 10px;
+  justify-content: center;
+}
+  /*List-item.vue*/
+  .li-card {
+    width: 100%;
+  }
+  
+  .add-task{
+    padding: 5px;
+  }
+  .li-title {
+    font-size: 1.5em;
+    color: #002060 !important;
+    font-weight: 700;
+    justify-content: end !important;
+    background-color: rgba(58, 237, 237, 0.468) !important;
+
+  }
+  
+  .li-li {
+    justify-content: space-between;
+    border: 1px solid #fd7e14 !important;
+    border-radius: 10px !important;
+  }
+  .li-ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  .list-container {
+  /* Ajoutez des styles personnalisés selon vos besoins */
+  border: 1px solid #1b1b29;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+.list-container h2 {
+  margin-bottom: 10px;
+}
+.li-add {
+  display: flex;
+  margin-bottom: 5px;
+
+} 
+.li-add-div {
+  justify-content: center;
+}
 /*************************************************************/

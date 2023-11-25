@@ -40,8 +40,8 @@
            </div>
         <div class="table-responsive">
 
-          <table class="table  table-sm">
-            <thead class="head-content">
+          <table class="table  table-sm project-table">
+            <thead class="head-content p-t-head">
               <tr>
                 <th class="checkbox-cell">
                     <input type="checkbox" id="selectAll">
@@ -60,7 +60,7 @@
             </thead>
             <tbody>
               <!-- Utilisation de v-for pour afficher les projets -->
-          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject">
+          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject" class="p-a">
 
             <tr>
               <td class="checkbox-cell">
@@ -86,7 +86,7 @@
     </div>
 </template>
 <script>
-import ProjectForm1 from './_Forms/ProjectForm1.vue';
+import ProjectForm1 from '../_Forms/ProjectForm1.vue';
 import {getListProject} from '@/services/adminServices';
 
 
@@ -125,4 +125,4 @@ export default {
   },
 };
 </script>
-<style src="../style.css"> </style>
+<style src="../../style.css"> </style>

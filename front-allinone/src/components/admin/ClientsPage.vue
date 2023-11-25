@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-9 ms-sm-auto col-lg-10 px-md-2 flex-1">
+  <div class="col-md-9 ms-sm-auto col-lg-10 px-md-2 flex-1 client-page">
         <div class="client-list">
             <a href="/cld"><client-card
                 v-for="(client, index) in clients"
@@ -13,7 +13,7 @@
 </template>
 <script>
 import ClientCard from './ClientCard.vue';
-import ClientForm1 from './_Forms/ClientForm1.vue';
+import ClientForm1 from '../_Forms/ClientForm1.vue';
 import {getListClient} from '@/services/adminServices';
 
 export default {
@@ -84,4 +84,4 @@ data() {
 };
 </script>
 
-<style src="../style.css"> </style>
+<style src="../../style.css"> </style>

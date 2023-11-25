@@ -15,4 +15,5 @@ import 'bootstrap/dist/js/bootstrap.js';
   const app = createApp(App);
   app.use(Dialog);
   app.use(router);
+  
   app.mount('#app');

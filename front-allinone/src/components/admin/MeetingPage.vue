@@ -20,4 +20,4 @@ export default {
   name: 'MeetingPage',
 };
 </script>
-<style scoped src="../style.css"> </style>
+<style src="../../style.css"> </style>

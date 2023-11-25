@@ -27,7 +27,7 @@
     </body>
 
       <footer class="py-3 mb-0">
-        <div class="container">
+        <div class="container con-foot">
           <span class="text-muted">&copy; 2017–2021 Place sticky footer content here.</span>
         </div>
       </footer>
@@ -58,4 +58,4 @@ export default {
 };
 </script>
 
-<style scoped src="../style.css"> </style>
+<style src="../../style.css"> </style>

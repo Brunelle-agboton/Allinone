@@ -1,31 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import ProjectDetails from './components/ProjectDetails.vue';
-import ClientsDetail from './components/ClientsDetail.vue';
-import TeamDetail from './components/TeamDetail.vue';
-
+import ProjectDetails from './components/admin/ProjectDetails.vue';
+import ClientsDetail from './components/admin/ClientsDetail.vue';
+import TeamDetail from './components/admin/TeamDetail.vue';
+import LayoutEquipe from './components/equipe/LayoutEquipe.vue';
+import TaskPage from './components/equipe/TaskPage.vue';
+import BoardPage from './components/equipe/BoardPage.vue'
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/h',
+      path: '/home',
       name: 'HomePage',
-      component: () => import('./components/HomePage.vue'),
+      component: () => import('./components/_Arche/HomePage.vue'),
     },
     {
       path: '/dash',
       name: 'DashboardPage',
-      component: () => import('./components/DashboardPage.vue'),
+      component: () => import('./components/admin/DashboardPage.vue'),
     },
     {
       path: '/connexion',
       name: 'ConnexionPage',
-      component: () => import('./components/Connexion.vue'),
+      component: () => import('./components/admin/Connexion.vue'),
     },
     {
       path: '/projects',
       name: 'ProjectPage',
-      component: () => import('./components/ProjectPage.vue'),
+      component: () => import('./components/admin/ProjectPage.vue'),
     },
     {
       path: '/projet/:id',
@@ -33,7 +35,6 @@ export default createRouter({
       component: ProjectDetails,
       props: true,
     },
-
     {
       path: '/cld/:id',
       name: 'ClientsDetail',
@@ -45,7 +46,7 @@ export default createRouter({
     {
       path: '/teams',
       name: 'TeamPage',
-      component: () => import('./components/TeamPage.vue'), 
+      component: () => import('./components/admin/TeamPage.vue'), 
     },
     {
       path: '/teamdetail/:id',
@@ -56,26 +57,36 @@ export default createRouter({
     {
       path: '/cl',
       name: 'ClientsPage',
-      component: () => import('./components/ClientsPage.vue'), 
+      component: () => import('./components/admin/ClientsPage.vue'), 
     },
     {
       path: '/company',
       name: 'CompanyPage',
-      component: () => import('./components/CompanyPage.vue'), 
+      component: () => import('./components/admin/CompanyPage.vue'), 
     }
     ,{
       path: '/meet',
       name: 'MeetingPage',
-      component: () => import('./components/MeetingPage.vue'),
+      component: () => import('./components/admin/MeetingPage.vue'),
     },{
       path: '/stats',
       name: 'StatistiquesPage',
-      component: () => import('./components/StatistiquesPage.vue'),
+      component: () => import('./components/admin/StatistiquesPage.vue'),
     },
     {
       path: '/listd',
       name: 'StatistiquesPage',
-      component: () => import('./components/StatistiquesPage.vue'),
+      component: () => import('./components/admin/StatistiquesPage.vue'),
+    },
+    {
+      path: '/team',
+      name: 'LayoutEquipe',
+      component: LayoutEquipe,
+      children:[
+        { path: 'tasks', name:'TaskPage', component: TaskPage},
+        { path: 'board', name:'BoardPage', component: BoardPage},
+
+        ]
     }
   ],
 });

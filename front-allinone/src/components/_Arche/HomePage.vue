@@ -64,7 +64,7 @@
             </ul>
             </div>
           </div>
-        <div class="col-md-9 ms-sm-auto col-lg-12 px-md-4" style="margin-top: 50px;">
+        <div class="col-md-9 ms-sm-auto col-lg-12 px-md-4" style="margin-top: 50px; background-position: chartreuse;">
           <router-view />
         </div>
       </div>
@@ -80,4 +80,4 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style src="../style.css"> </style>
+<style src="../../style.css"> </style>
