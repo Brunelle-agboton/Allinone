@@ -1,1 +1,1 @@
- /usr/bin/env /usr/bin/python3 /home/brunelle/.vscode-server/extensions/ms-python.python-2023.20.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 35417 -- -m flask run --no-debugger --no-reload 
+ /usr/bin/env /usr/bin/python3 /home/brunelle/.vscode-server/extensions/ms-python.python-2023.20.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 44647 -- /home/brunelle/ETNA/DP/projet_CDA/back-allinone/app.py 

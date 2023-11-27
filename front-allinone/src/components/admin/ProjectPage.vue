@@ -40,46 +40,42 @@
            </div>
         <div class="table-responsive">
 
-          <table class="table  table-sm project-table">
-            <thead class="head-content p-t-head">
+          <table class="table project-table">
+            <thead class="p-t-head">
               <tr>
                 <th class="checkbox-cell">
                     <input type="checkbox" id="selectAll">
                     <label for="selectAll"></label>
                 </th>
-                <th scope="col">Code</th>
-                <th scope="col">Nom Projet</th>
-                <th scope="col">Description</th>
-                <th scope="col">Debut</th>
-                <th scope="col">Fin estimer</th>
-                <th scope="col">Avancement</th>
-                <th scope="col">Commentaires</th>
-                <th scope="col">External requirement</th>
-                <th scope="col">Status</th>
+                <th>Code</th>
+                <th>Nom Projet</th>
+                <th>Description</th>
+                <th>Debut</th>
+                <th>Fin estimer</th>
+                <th>Avancement</th>
+                <th>Commentaires</th>
+                <th>External requirement</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               <!-- Utilisation de v-for pour afficher les projets -->
-
-            <tr>
-          <a v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject" class="p-a">
+            <tr v-for="project in projects" :key="project.idproject" :href="'/projet/' + project.idproject" class="p-a">
 
               <td class="checkbox-cell">
                 <input type="checkbox" :id="'row' + project.idproject">
                 <label :for="'row' + project.idproject"></label>
               </td>
-              <td>{{ project.code }}</td>
-              <td>{{ project.name }}</td>
-              <td>{{ project.description }}</td>
-              <td>{{ project.created_at }}</td>
-              <td>{{ project.expired_at }}</td>
-              <td>{{ project.progress }}</td>
-              <td>{{ project.comments }}</td>
-              <td>{{ project.requirement }}</td>
-              <td>{{ project.status }}</td>
-            </a>
+              <td><router-link :to="'projet/' + project.idproject" style="text-decoration: none !important;">{{ project.idproject }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.name }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.description }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.created_at }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.expired_at }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.progress }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.comments }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.requirement }}</router-link></td>
+              <td><router-link :to="'projet/' + project.idproject">{{ project.status }}</router-link></td>
             </tr>
-          
 
             </tbody>
           </table>
@@ -120,6 +116,11 @@ export default {
           console.error(error)
         });
     },
+    formatDate(dateString) {
+      const options = { day: 'numeric', month: 'short', year: 'numeric' };
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', options);
+      },
   },
   mounted() {
     // Appeler fetchData pour charger la liste des projets au chargement de la page

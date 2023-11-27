@@ -9,13 +9,7 @@ export const getListClient = () => {
 };
 
 export const getListProject = () => {
-  return apiUrl.get('/admin/projects', {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Headers': '*',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
+  return apiUrl.get('/admin/projects');
 };
 
 export const addClient = (data) => {

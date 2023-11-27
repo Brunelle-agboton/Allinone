@@ -10,11 +10,9 @@ from flask_cors import CORS, cross_origin
 
 
 app = Flask(__name__)
-load_dotenv()
-
-CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8081", "supports_credentials": True}})
+CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True}})
 bcrypt = Bcrypt(app)
-
+load_dotenv()
 
 # Configurer la base de données SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -231,10 +229,11 @@ def delete_project(idproject):
 
 # Liste des projets
 @app.route('/admin/projects', methods=['GET'])
-def list_project():
-    projects = db.session.query(Project).all()
+def list_project():    
+    projects = Project.query.all()
     project_list = []
     if projects:
+        
         for project in projects:
                 comment = Comments.query.filter_by(project_idproject=project.idproject)
                 project_data = {'idproject': project.idproject, 
@@ -245,8 +244,8 @@ def list_project():
                                 'status': project.project_status, 
                                 'requirement': project.requirement, 
                                 'progress': project.project_step,
-                                'comments': [comments.comment_text for comments in comment]}  # Ajoutez ici les données des commentaires
-                project_list.append(project_data)
+                                'comments': [comments.comment_text for comments in comment]}
+                project_list.append(project_data)                
     else:
         project_list = []
     return jsonify(project_list)
@@ -416,6 +415,47 @@ def update_team(idteam):
 ##################### Stats ############################
 
 ##################### Autre ############################
+#
+"""
+Elle récupère les données de la requête et vérifie si username, email et mot de passe sont présents
+Puis le nouvequ membre est créé avec le role correspondant
+"""
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+
+    if 'username' not in data or 'password' not in data or 'email' not in data:
+        return jsonify({'message': 'Le nom d\'utilisateur, le mot de passe et l\'email sont requis'}), 400
+
+    new_member = Member(username=data['username'], email=data.get('email'))
+    new_member.set_password(data['password'])
+
+    # Ajouter le rôle utilisateur par défaut
+    user_role = Role.query.filter_by(user=True).first()
+    new_member.roles.append(user_role)
+
+    try:
+        db.session.add(new_member)
+        db.session.commit()
+        return jsonify({'message': 'Membre créé avec succès'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    if 'username' not in data or 'password' not in data:
+        return jsonify({'message': 'Le nom d\'utilisateur et le mot de passe sont requis'}), 400
+
+    member = Member.query.filter_by(username=data['username']).first()
+
+    if member and member.check_password(data['password']):
+        # Vous pouvez inclure ici la logique pour générer le token d'authentification
+        return jsonify({'message': 'Connexion réussie'}), 200
+    else:
+        return jsonify({'message': 'Nom d\'utilisateur ou mot de passe incorrect'}), 401
 
 #*****************************************************************************Vue Equipe Projet********************************************************#
 

@@ -1,17 +1,28 @@
 <template>
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <label for="title">Title:</label>
-      <input v-model="editedTask.title" id="title" />
-  
-      <label for="description">Description:</label>
-      <textarea v-model="editedTask.description" id="description"></textarea>
-  
-      <label for="dueDate">Due Date:</label>
-      <input type="date" v-model="editedTask.dueDate" id="dueDate" />
-  
-      <!-- Ajoutez plus de champs de formulaire au besoin -->
-  
-      <button @click="saveTask">Save</button>
+  <div class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form @submit.prevent="saveTask">
+          <div class="form-group">
+            <label for="title">Title:</label>
+            <input v-model="editedTask.title" class="form-control" id="title" />
+          </div>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea v-model="editedTask.description" class="form-control" id="description"></textarea>
+
+          </div>
+          <div class="form-group">
+            <label for="dueDate">Due Date:</label>
+            <input type="date" v-model="editedTask.dueDate"  class="form-control" id="dueDate" />
+          </div>
+          <div class="row" style="justify-content:end; margin-top: 6px;">
+            <button type="button" class="btn btn-secondary col-3" @click="closeModal">close</button>
+            <button type="submit" class="btn btn-primary col-3">Edit</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
   </template>
 <script>
@@ -22,10 +33,14 @@ export default {
   },
   data() {
     return {
-      editedTask: { ...this.task }, // Créez une copie de la tâche pour éviter la mutation directe
+      isModalVisible: true,
+      editedTask: { ...this.task },
     };
   },
   methods: {
+    closeModal(){
+      this.isModalVisible = false;
+    },
     saveTask() {
       // Handle saving logic using this.editedTask
     },
@@ -39,14 +54,14 @@ export default {
   },
 };
 </script>
-
-  
   <style>
-  .task-form {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-  }
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  /* Ajoutez d'autres styles de disposition au besoin */
+}
   </style>
   
