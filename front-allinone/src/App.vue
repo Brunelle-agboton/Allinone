@@ -1,19 +1,18 @@
 <template>
   <div>
-    <NavBar />
-    <HomePage/>
+    <router-view />
   </div>
 </template>
 
 <script>
-import HomePage from './components/_Arche/HomePage.vue'
-import NavBar from './components/_Arche/NavBar.vue'
+//import HomePage from './components/_Arche/HomePage.vue'
+//import NavBar from './components/_Arche/NavBar.vue'
 
 export default {
   name: 'App',
   components: {
-    HomePage,
-    NavBar
+  //  HomePage,
+  //  NavBar
   }
 }
 </script>
