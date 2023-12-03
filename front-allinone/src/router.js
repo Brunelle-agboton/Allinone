@@ -9,29 +9,29 @@ import BoardPage from './components/equipe/BoardPage.vue'
 export default createRouter({
   history: createWebHistory(),
   routes: [
-    /*{
+    {
       path: '/',
       name: 'App',
       component: () => import('./App.vue'),
-    },*/
+    },
+    {
+      path: '/home',
+      name: 'HomePage',
+      component: () => import('./components/_Arche/HomePage.vue'),
+    },
+    {
+      path: '/connexion',
+      name: 'ConnexionPage',
+      component: () => import('./components/_Arche/Connexion.vue'),
+    },
     {
       path: '/admin',
       component: () => import('./components/admin/LayoutAdmin.vue'),
       children: [
         {
-          path: 'home',
-          name: 'HomePage',
-          component: () => import('./components/_Arche/HomePage.vue'),
-        },
-        {
           path: 'dash',
           name: 'DashboardPage',
           component: () => import('./components/admin/DashboardPage.vue'),
-        },
-        {
-          path: 'connexion',
-          name: 'ConnexionPage',
-          component: () => import('./components/_Arche/Connexion.vue'),
         },
         {
           path: 'projects',
