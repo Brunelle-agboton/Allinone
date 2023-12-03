@@ -6,11 +6,10 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
-
-
-
 app = Flask(__name__)
+
 CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True}})
+
 bcrypt = Bcrypt(app)
 load_dotenv()
 
@@ -113,7 +112,11 @@ def delete_client(idclient):
 def list_client():
     clients = db.session.query(ClientUser).all()
     if clients:
-        client_list = [{'idproject': client.idclient_user, 'name': client.client_user_name, 'client_email': client.client_email, 'activity': client.client_user_activity, 'tel': client.client_user_no} for client in clients]
+        client_list = [{'idproject': client.idclient_user, 
+                        'name': client.client_user_name, 
+                        'client_email': client.client_email, 
+                        'activity': client.client_user_activity, 
+                        'tel': client.client_user_no} for client in clients]
     else:
         client_list = []
     return jsonify(client_list)
@@ -121,10 +124,41 @@ def list_client():
 ##################### Projets ############################
 @app.route('/admin/project', methods=['POST'])
 def create_project():
+    """
+    Create a new project.
+
+    This route allows the creation of a new project by accepting a JSON payload
+    containing the project details. The required fields in the JSON payload are:
+    - project_name: The name of the project.
+    - project_description: The description of the project.
+    - expired_at: The expiration date of the project.
+
+    Method: POST
+    Request Payload:
+    {
+        "project_name": "Example Project",
+        "project_description": "Description of the project.",
+        "expired_at": "2023-12-31"  # Format: YYYY-MM-DD
+    }
+
+    Returns:
+    - If successful, returns a JSON response with a success message and the
+      ID of the created project.
+        {
+            "message": "Project created successfully",
+            "idproject": 1  # ID of the created project
+        }
+    - If there is an error or missing data, returns an appropriate error message.
+
+    HTTP Status Codes:
+    - 201 Created: Project created successfully.
+    - 400 Bad Request: Invalid or missing data in the request payload.
+    """
     data = request.get_json()
     
-    new_project = Project(project_name=data['project_name'], project_description=data['project_description'], expired_at=data['expired_at'])
-    print(new_project)
+    new_project = Project(project_name=data['project_name'], 
+                          project_description=data['project_description'], 
+                          expired_at=data['expired_at'])
     db.session.add(new_project)
     db.session.commit()
     

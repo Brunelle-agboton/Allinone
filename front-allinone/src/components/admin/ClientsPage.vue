@@ -71,7 +71,7 @@ data() {
           client.description = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.";
           this.clients.push(client)
           });
-          console.log(response.data)
+          // console.log(response.data)
         })
         .catch((error) => {
           console.error(error)
