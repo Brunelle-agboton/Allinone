@@ -122,11 +122,13 @@ class Member(db.Model):
     def check_password(self, passw):
         return bcrypt.check_password_hash(self.password, passw)
 
+    def is_admin(self):
+        # Logique pour déterminer si le membre est un administrateur
+        return any(role.admin or role.super_admin for role in self.roles)
 
     roles = db.relationship("Role", secondary='member_has_role', back_populates="members")
     domains = db.relationship("Domain", secondary='member_has_domain', back_populates="members")
     tasks = db.relationship("Tasks", secondary='member_has_tasks', back_populates="members", secondaryjoin="Member.idmember == member_has_tasks.c.member_idmember")
-
     teams=db.relationship("ProjectTeam", secondary='project_team_has_member', back_populates="members")
     
 class ProjectTeamHasMember(db.Model):

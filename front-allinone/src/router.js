@@ -5,8 +5,10 @@ import TeamDetail from './components/admin/TeamDetail.vue';
 import LayoutEquipe from './components/equipe/LayoutEquipe.vue';
 import TaskPage from './components/equipe/TaskPage.vue';
 import BoardPage from './components/equipe/BoardPage.vue'
+import store from './store/auth';
 
-export default createRouter({
+
+const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -20,13 +22,14 @@ export default createRouter({
       component: () => import('./components/_Arche/HomePage.vue'),
     },
     {
-      path: '/connexion',
+      path: '/auth',
       name: 'ConnexionPage',
-      component: () => import('./components/_Arche/Connexion.vue'),
+      component: () => import('./components/_Arche/ConnexionPage.vue'),
     },
     {
       path: '/admin',
       component: () => import('./components/admin/LayoutAdmin.vue'),
+      meta: { requiresAuth: true },
       children: [
         {
           path: 'dash',
@@ -99,4 +102,20 @@ export default createRouter({
         ]
     }
   ],
+  
 });
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    //const token = localStorage.getItem('access_token');
+
+    if (!store.getters.isAuthenticated) {
+      next('/login'); // Rediriger vers la page de connexion si le jeton n'est pas présent
+    } else {
+      next();
+    }
+  } else {
+    next(); // Continuer vers d'autres routes non protégées
+  }
+});
+
+export default router;

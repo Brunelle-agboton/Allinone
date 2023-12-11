@@ -1,32 +1,42 @@
-import { mount } from "@vue/test-utils";
-import ProjectPage from '../src/components/ProjectPage.vue';
+import { mount} from '@vue/test-utils';
+import { createApp } from 'vue';
+import ProjectPage from '../src/components/admin/ProjectPage.vue';
 
 /************************************** Test sur les fonctionnalites projets */
-/**Vérifie que le composant ProjectPage se rend correctement sans erreurs. */
-describe('ProjectPage', () => {
-  it('renders without errors', () => {
-    const wrapper = mount(ProjectPage);
-    expect(wrapper.exists()).toBe(true);
+const app = createApp({});
+const localVue = app.use;
+
+// Mocker les méthodes et services nécessaires
+jest.mock('@/services/adminServices', () => ({
+  getListProject: jest.fn(() => Promise.resolve({ data: [] })),
+}));
+
+// Monter le composant pour les tests
+const wrapper = mount(ProjectPage, { localVue, global: {
+  stubs: ["router-link", "router-view"], // Composants de substitution (`Stubs`) pour router-link et router-view au cas où ils sont affichés dans notre composant
+},});
+
+describe('ProjectPage.vue', () => {
+  // Teste l'initialisation du composant
+  it('Initialise projects a un tableau vide et isModalVisible a false', () => {
+    expect(wrapper.vm.projects).toEqual([]);
+    expect(wrapper.vm.isModalVisible).toBe(false);
+  });  
+
+  // Tester l'ouverture de la modal après l'appel de la méthode showModal
+  it('Affiche le modal quand showModal est appelle', async () => {
+    await wrapper.vm.showModal();
+    expect(wrapper.vm.isModalVisible).toBe(true);
+    // Vérifie si la modal est affichée dans le DOM
+    expect(wrapper.find('#backdrop').isVisible()).toBe(true);
   });
-});
 
-/**Vérifie que la modal s'ouvre et se ferme correctement lorsqu'on appelle les méthodes showModal et closeModal */
-it('shows and closes the modal', async () => {
-  const wrapper = mount(ProjectPage);
-  const showModalButton = wrapper.get('[data-test="mod"]');
-  
-  // Vérifie que la modal n'est pas visible au départ
-  expect(wrapper.findComponent({ name: 'ProjectForm1' }).exists()).toBe(false);
+  // Teste la fermeture de la modal après l'appel de la méthode closeModal
+  it('Cache le modal quand closeModal est appelle', async () => {
+    await wrapper.vm.closeModal();
+    expect(wrapper.vm.isModalVisible).toBe(false);
+    // Vérifier si la modal est cachée dans le DOM
+    expect(wrapper.find('#backdrop').isVisible()).toBe(false);
+  });
 
-  // Clique sur le bouton pour ouvrir la modal
-  await showModalButton.trigger('click');
-
-  // Vérifie que la modal est maintenant visible
-  expect(wrapper.findComponent({ name: 'ProjectForm1' }).exists()).toBe(true);
-
-  // Appelle la méthode pour fermer la modal
-  await wrapper.vm.closeModal();
-
-  // Vérifie que la modal est fermée
-  expect(wrapper.findComponent({ name: 'ProjectForm1' }).exists()).toBe(false);
 });

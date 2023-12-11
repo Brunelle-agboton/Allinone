@@ -1,26 +1,50 @@
+import os
 import pytest
-from app import app, db  # Import your Flask app instance and SQLAlchemy db
-from model.project import Role
-from test_unitaire.conftest import client
-from flask import session
+from app import app, db
 
-# Test to create a client
-def test_create_client(client):
-    # Ensure Flask-SQLAlchemy knows about the app
+# Utilisez un client pytest-flask pour les tests
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    client = app.test_client()
+
     with app.app_context():
-        # You can use the client to send a simulated POST request to create a client
-        client_role = Role.query.filter_by(client=1).first()
+        db.create_all()
 
-        response = client.post('/admin/client', json={
-            'client_street': '123 Main St',
-            'client_city': 'nabonne',
-            'client_postal_code': '50000',
-            'client_state': 'Pays bas',
-            'client_user_name': 'Nom du client',
-            'client_email': 'client@email.com',
-            'client_user_activity': 'Activité du client',
-            'client_user_no': '1234567890',
-            '_idrole': client_role.idrole
-        })
-        
-        assert response.status_code == 201  # Ensure client creation returns a 201 status code
+    yield client
+
+# Test de base pour s'assurer que l'application s'exécute correctement
+def test_hello_world(client):
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b'Hello, World!' in response.data
+
+# Test de l'API /admin/team/<int:idteam>
+def test_get_team(client):
+    # Créez des données de test dans la base de données
+    with app.app_context():
+        # Ajoutez ici des données de test à la base de données, si nécessaire
+        pass
+
+    # Appelez l'API /admin/team/<int:idteam>
+    response = client.get('/admin/team/1')
+    assert response.status_code == 200
+
+    # Vérifiez le contenu de la réponse
+    data = response.get_json()
+    assert 'idproject_team' in data
+    assert 'team_name' in data
+    assert 'team_description' in data
+    assert 'created_at' in data
+    assert 'updated_at' in data
+    assert 'nb_projet' in data
+    assert 'projets' in data
+    assert 'members' in data
+
+# Ajoutez d'autres tests au besoin
+
+# Nettoyez la base de données après les tests
+def pytest_sessionfinish(session, exitstatus):
+    with app.app_context():
+        db.drop_all()

@@ -2,13 +2,18 @@ import os
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
-
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
+import datetime
+from sqlalchemy.orm import class_mapper
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
-app = Flask(__name__)
 
-CORS(app, methods=['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'], resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True}})
+app = Flask(__name__)
+jwt = JWTManager(app)
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True,  "allow_headers": ["Content-Type"]}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 bcrypt = Bcrypt(app)
 load_dotenv()
@@ -16,6 +21,8 @@ load_dotenv()
 # Configurer la base de données SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 db = SQLAlchemy()
 
@@ -25,17 +32,37 @@ app.config['FLASK_DEBUG'] = os.getenv('FLASK_DEBUG')
 
 from model.project import *
 
+def to_dict(model):
+    """Converts a SQLAlchemy model to a dictionary."""
+    return {col.name: getattr(model, col.name) for col in class_mapper(model.__class__).mapped_table.c}
+
 
 @app.route('/', methods = ['Get'])
 def hello_world():
     return 'Hello, World!'
 
-@app.after_request
-def after_request(response):
-  response.headers['Access-Control-Allow-Methods']='*'
-  response.headers['Access-Control-Allow-Origin']='*'
-  response.headers['Vary']='Origin'
-  return response
+#@app.after_request
+#def after_request(response):
+ #   response.headers['Access-Control-Allow-Methods']='*'
+  #  response.headers['Access-Control-Allow-Origin']='*'
+   # response.headers['Vary']='Origin'
+    #return response
+
+
+@app.route('/', methods=['OPTIONS'])
+def handle_options():
+    return jsonify(success=True), 200, {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': '*'}
+
+@jwt_required()
+def is_admin():
+    current_user = get_jwt_identity()
+    print(current_user)
+    return current_user.get('role') == 'admin'
+
+actual_date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+expired_at = actual_date.strftime('%Y-%m-%dT%H:%M:%S')
+
+
 #*****************************************************************Vue Admin******************************************
 ##################### Gestion des membres ############################
 @app.route('/admin/mem', methods=['POST'])
@@ -109,7 +136,11 @@ def delete_client(idclient):
 
 # Liste des clients
 @app.route('/admin/clients', methods=['GET'])
+@cross_origin()
+@jwt_required()
 def list_client():
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
     clients = db.session.query(ClientUser).all()
     if clients:
         client_list = [{'idproject': client.idclient_user, 
@@ -123,6 +154,8 @@ def list_client():
   
 ##################### Projets ############################
 @app.route('/admin/project', methods=['POST'])
+@cross_origin()
+@jwt_required()
 def create_project():
     """
     Create a new project.
@@ -154,11 +187,20 @@ def create_project():
     - 201 Created: Project created successfully.
     - 400 Bad Request: Invalid or missing data in the request payload.
     """
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     data = request.get_json()
     
     new_project = Project(project_name=data['project_name'], 
                           project_description=data['project_description'], 
                           expired_at=data['expired_at'])
+    
+    if 'comments' in data:
+        for comment_text in data['comments'][0]:
+            new_comment = Comments(comments_lib=comment_text)
+            new_project.comments.append(new_comment)
+
     db.session.add(new_project)
     db.session.commit()
     
@@ -166,7 +208,12 @@ def create_project():
 
 #Route pour recuperer un projet avec son id
 @app.route('/admin/project/<int:idproject>')
+@cross_origin()
+@jwt_required()
 def get_project(idproject):
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     # Recuperer le projet correspondant à l'ID
     project = db.session.get(Project, idproject)
 
@@ -213,7 +260,12 @@ def get_project(idproject):
     
 # Route pour modifier un projet, son status et son commentaire
 @app.route('/admin/editp/<int:idproject>', methods=['PUT'])
+@cross_origin()
+@jwt_required()
 def update_project(idproject):
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     data = request.get_json()
     #print(data)
     project = db.session.get(Project, idproject)
@@ -239,20 +291,27 @@ def update_project(idproject):
         project.requirement = data['requirement']
     if 'comments' in data:
         if project.comments:
-            project.comments[0].comments_lib = data['comments']
+            if len(project.comments) > 0:
+                project.comments[0].comments_lib = data['comments'][0]
+            else:
+                # Gérer le cas où la liste de commentaires est vide
+                # Ajouter un nouvel objet Comments si nécessaire
+                if data['comments']:
+                    new_comment = Comments(comments_lib=data['comments'][0], project_idproject=idproject)
+                    project.comments.append(new_comment)
         else:
             if data['comments']:
-                new_comment = Comments(comments_lib=data['comments'],project_idproject=idproject)
-                db.session.add(new_comment)
-                
-            project.comments=data['comments']
+                # Créer une nouvelle liste de commentaires si elle n'existe pas encore
+                project.comments = [Comments(comments_lib=data['comments'][0], project_idproject=idproject)]
+        
     if 'status_idstatus' in data:
         project.status_idstatus = data['status_idstatus']
     
     db.session.add(project)            
     db.session.commit()
-    
-    return jsonify(project), 200
+    project_dict = to_dict(project)
+
+    return jsonify(project_dict), 200
 
 @app.route('/admin/delp/<int:idproject>', methods=['DELETE'])
 def delete_project(idproject):
@@ -263,7 +322,12 @@ def delete_project(idproject):
 
 # Liste des projets
 @app.route('/admin/projects', methods=['GET'])
+@cross_origin()
+@jwt_required()
 def list_project():    
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+    
     projects = Project.query.all()
     project_list = []
     if projects:
@@ -278,7 +342,7 @@ def list_project():
                                 'status': project.project_status, 
                                 'requirement': project.requirement, 
                                 'progress': project.project_step,
-                                'comments': [comments.comment_text for comments in comment]}
+                                'comments': [comments.comments_lib for comments in comment]}
                 project_list.append(project_data)                
     else:
         project_list = []
@@ -366,7 +430,12 @@ def add_members_to_team(idteam):
         return jsonify({'message': 'Une erreur est survenue lors de l\'ajout du membre à l\'équipe'}), 500
 
 @app.route('/admin/teams', methods=['GET'])
+@cross_origin()
+@jwt_required()
 def list_team():
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     teams = ProjectTeam.query.all()
     team_list = []
     if teams:
@@ -383,6 +452,8 @@ def list_team():
 
 # Liste des projets d'une equipe
 @app.route('/admin/team/<int:idteam>', methods=['GET'])
+@cross_origin()
+@jwt_required()
 def get_team(idteam):
     
     team =  db.session.get(ProjectTeam, idteam)
@@ -477,17 +548,26 @@ def register():
         return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
 
 @app.route('/login', methods=['POST'])
+@cross_origin()
 def login():
+    
     data = request.get_json()
 
     if 'username' not in data or 'password' not in data:
         return jsonify({'message': 'Le nom d\'utilisateur et le mot de passe sont requis'}), 400
 
     member = Member.query.filter_by(username=data['username']).first()
-
+    role =''
     if member and member.check_password(data['password']):
-        # Vous pouvez inclure ici la logique pour générer le token d'authentification
-        return jsonify({'message': 'Connexion réussie'}), 200
+        roles = [role.idrole for role in member.roles]
+
+        if roles[0] == 3:
+            role = 'admin'
+            print(roles[0], role)
+
+        access_token = create_access_token(identity={'id': member.idmember,'username': member.username, 'role': role, 'expired_at' : expired_at})
+
+        return jsonify(access_token=access_token), 200
     else:
         return jsonify({'message': 'Nom d\'utilisateur ou mot de passe incorrect'}), 401
 
