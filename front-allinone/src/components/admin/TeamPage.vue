@@ -70,18 +70,17 @@
           <th>Cree le </th>
         </tr>
       </thead>
-      <router-link v-for="(row, index) in tableData"
+      <tbody >
+        <tr v-for="(row, index) in tableData"
       :to="'/teamdetail/' + row.idteam" 
-      :key="index">
-      <tbody>
-        <tr >
-          <td>{{ row.idteam }}</td>
+      :key="index"  >
+          
+      <td>{{ row.idteam }}</td>
           <td>{{ row.name }}</td>
           <td>{{ row.description }}</td>
           <td>{{ row.created_at }}</td>
         </tr>
       </tbody>
-    </router-link>
     </table>
 
   </div>

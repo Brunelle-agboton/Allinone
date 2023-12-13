@@ -1,34 +1,45 @@
 import axios from 'axios';
+import {AuthService} from './AuthService';
 
 const apiUrl = axios.create({
   baseURL: 'http://127.0.0.1:5000',
 });
+axios.defaults.withCredentials = true;
+
+
+const token = AuthService.getToken();
+//axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
 /* Client*/
 export const getListClient = () => {
   return apiUrl.get('/admin/clients');
 };
-
-export const getListProject = () => {
-  return apiUrl.get('/admin/projects', {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Headers': '*',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
-};
-
 export const addClient = (data) => {
   return apiUrl.post('/admin/client', data);
 }
 /* Projet*/
 
 ;export const addProject = (data) => {
-  return apiUrl.post('/admin/project', data);
+  return apiUrl.post('/admin/project', data, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 
+export const getListProject = () => {
+  return apiUrl.get('/admin/projects', {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
+};
 export const getProject = (id) => {
-  return apiUrl.get(`/admin/project/${id}`);
+  return apiUrl.get(`/admin/project/${id}`, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 
 export const editProject = (id, data) => {
@@ -37,6 +48,7 @@ export const editProject = (id, data) => {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token}`,
     },
   });
 };
@@ -47,11 +59,19 @@ export const delProject = (id) => {
 
 /* Team*/
 export const getTeams = () => {
-  return apiUrl.get('/admin/teams');
+  return apiUrl.get('/admin/teams', {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 
 export const addTeam = (data) => {
-  return apiUrl.post('/admin/team', data);
+  return apiUrl.post('/admin/team', data, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 
 export const getTeam = (id) => {

@@ -1,9 +1,9 @@
 from app import db, bcrypt
 
-
 class Project(db.Model):
     __tablename__ = 'project'
-
+    
+    # Les columns de la table project
     idproject = db.Column(db.Integer, primary_key=True, autoincrement=True)
     project_name = db.Column(db.String(45), nullable=False)
     project_description = db.Column(db.String(255))
@@ -17,10 +17,9 @@ class Project(db.Model):
     project_team_idproject_team = db.Column(db.Integer)
     client_user_idclient_user = db.Column(db.Integer)
     _idclient_user = db.Column(db.Integer, db.ForeignKey('client_user.idclient_user'))
-    #id_status= db.Column(db.Integer,db.ForeignKey('project_status.idstatus'))
     
-    # Définir les relations avec les autres tables
-    project_team = db.relationship("ProjectTeam", back_populates="projects")
+    # Les relations de la table project avec les autres tables
+    project_team = db.relationship("ProjectTeam", back_populates="projects") # Relation avec la table ProjectTeam
     client_user = db.relationship("ClientUser",  back_populates="project")
     status = db.relationship("Status", back_populates="projects")
     comments=db.relationship("Comments", back_populates="project")
@@ -104,7 +103,7 @@ class ProjectTeam(db.Model):
     
     # Définir les relations avec les autres tables
     members = db.relationship("Member", secondary='project_team_has_member', back_populates="teams")
-    projects = db.relationship("Project", back_populates="project_team")
+    projects = db.relationship("Project", back_populates="project_team") # Relation inverse avec la table Project
     meetings=db.relationship("Meeting", back_populates="project_team")
     tasks=db.relationship("Tasks", back_populates="project_team")
 
@@ -123,11 +122,13 @@ class Member(db.Model):
     def check_password(self, passw):
         return bcrypt.check_password_hash(self.password, passw)
 
+    def is_admin(self):
+        # Logique pour déterminer si le membre est un administrateur
+        return any(role.admin or role.super_admin for role in self.roles)
 
     roles = db.relationship("Role", secondary='member_has_role', back_populates="members")
     domains = db.relationship("Domain", secondary='member_has_domain', back_populates="members")
     tasks = db.relationship("Tasks", secondary='member_has_tasks', back_populates="members", secondaryjoin="Member.idmember == member_has_tasks.c.member_idmember")
-
     teams=db.relationship("ProjectTeam", secondary='project_team_has_member', back_populates="members")
     
 class ProjectTeamHasMember(db.Model):
@@ -135,8 +136,6 @@ class ProjectTeamHasMember(db.Model):
 
     project_team_idproject_team = db.Column(db.Integer, db.ForeignKey('project_team.idproject_team'), primary_key=True)
     member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
-
-    # Vous n'avez pas besoin de définir de relation ici car elle est gérée via 'members' dans ProjectTeam et 'teams' dans Member.
 
 class Role(db.Model):
     __tablename__ = 'role'
@@ -149,7 +148,6 @@ class Role(db.Model):
 
     client_users = db.relationship("ClientUser", back_populates="role")
     members = db.relationship("Member", secondary='member_has_role', back_populates="roles")
-
 
 class Tasks(db.Model):
     __tablename__ = 'tasks'

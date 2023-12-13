@@ -10,8 +10,8 @@
             <!-- Formulaire de modification des champs -->
             <form>
               <div class="mb-3">
-                <label for="identif" class="form-label">Client du Projet</label>
-                <input type="text" class="form-control" id="identif" v-model="project.idproject">
+                <label for="identif" class="form-label">Identifiant du Projet</label>
+                <input type="text" class="form-control" id="identif" v-model="dynamicModel">
               </div>
               <div class="mb-3">
                 <label for="name" class="form-label">Nom du Projet</label>
@@ -23,17 +23,16 @@
               </div>
               <div class="mb-3">
                 <label for="equipe" class="form-label">Équipe de Gestion</label>
-                <select class="form-control" id="equipe" v-model="project.team.idproject_team">
-                  <option value="">Sélectionnez une équipe</option>
-                  <option v-for="t in teams" :key="t.idproject_team" :value="t.name">{{ t.name }}</option>
+                <select class="form-select" id="equipe">
+                    <option selected>Sélectionnez une équipe</option>
+                    <option v-for="t in teams" :key="t.idproject_team" :value="t.name">{{ t.name }}</option>
                 </select>
-                {{ project.team.team_name }}
-
-              </div>
-              <div class="mb-3">
-                <label for="commentaire" class="form-label">Commentaire</label>
-                <textarea class="form-control" id="commentaire" v-model="project.comments"></textarea>
-              </div>
+                {{ project.team ? project.team.team_name : '' }}
+                </div>
+                          <div class="mb-3">
+                <label for="commentaire" class="form-label">Commentaire</label><textarea v-if="Array.isArray(project.comments)" class="form-control" id="commentaire" v-model="project.comments[0]"></textarea>
+    <textarea v-else class="form-control" id="commentaire" v-model="project.comments"></textarea>
+</div>
               <div class="mb-3">
                 <label for="avancement" class="form-label">Avancement</label>
                 <input type="text" class="form-control" id="avancement" v-model="project.progress">
@@ -127,7 +126,15 @@ export default {
   },
   computed: {
     ...mapState(['modifications']),
-
+    dynamicModel: {
+    get() {
+      return "000" + this.project.idproject;
+    },
+    set(value) {
+      // Vous pouvez définir une logique ici si nécessaire
+      console.log("Nouvelle valeur :", value);
+    },
+  },
   },
   methods: {
     

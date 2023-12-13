@@ -5,10 +5,7 @@
       <div class="card-body">
         <ul class="list-group list-group-flush">
           <li v-for="task in list.tasks" :key="task.id" class="list-group-item li-li" @click="handleTaskClick(task)">
-            <button @click="showModal"  class="btn btn-primary add-task">{{ task.title }}
-              <TaskForm v-show="isModalVisible" @close="closeModal" />
-
-            <i class="btn btn-icon people" ></i>
+            <button type="button" @click="showModal(task)" data-test="mod" class="add-task">{{ task.title }}
             </button>
           </li>
         </ul>
@@ -24,17 +21,19 @@
         </div>
         <div v-else>
           <div class="row" style="margin: 5px;">
-            <button @click="addTask" class="btn btn-success">Nouvelle tâche</button>
-            <button @click="toggleAddingTask" class="btn btn-danger">Annuler</button>
+            <button @click="addTask" class="btn btn-success col-6">Nouvelle tâche</button>
+            <button @click="toggleAddingTask" class="btn-close col-6"></button>
           </div>
         </div>
       </div>
     </div>
+    <TaskForm :class="{ 'is-active': isModalVisible }" :task="selectedTask"/>
+
   </div>
 </template>
 
 <script>
-import { TaskForm } from "@/components/equipe/TaskForm.vue";
+import TaskForm from "@/components/equipe/TaskForm.vue";
 
 export default {
   name: 'List-item',
@@ -49,14 +48,16 @@ export default {
       isAddingTask: false,
       newTask: "",
       isModalVisible: false,
+      selectedTask: null,
     };
   },
   computed: {
   },
   methods: {
-    showModal() {
-        this.isModalVisible = true;
-      },
+    showModal(task) {
+      this.selectedTask = task;
+      this.isModalVisible = true;
+    },
     closeModal() {
         this.isModalVisible = false;
       },

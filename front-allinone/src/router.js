@@ -5,79 +5,92 @@ import TeamDetail from './components/admin/TeamDetail.vue';
 import LayoutEquipe from './components/equipe/LayoutEquipe.vue';
 import TaskPage from './components/equipe/TaskPage.vue';
 import BoardPage from './components/equipe/BoardPage.vue'
+import store from './store/auth';
 
-export default createRouter({
+
+const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/',
+      name: 'App',
+      component: () => import('./App.vue'),
+    },
     {
       path: '/home',
       name: 'HomePage',
       component: () => import('./components/_Arche/HomePage.vue'),
     },
     {
-      path: '/dash',
-      name: 'DashboardPage',
-      component: () => import('./components/admin/DashboardPage.vue'),
-    },
-    {
-      path: '/connexion',
+      path: '/auth',
       name: 'ConnexionPage',
-      component: () => import('./components/admin/Connexion.vue'),
+      component: () => import('./components/_Arche/ConnexionPage.vue'),
     },
     {
-      path: '/projects',
-      name: 'ProjectPage',
-      component: () => import('./components/admin/ProjectPage.vue'),
-    },
-    {
-      path: '/projet/:id',
-      name: 'projetDetails',
-      component: ProjectDetails,
-      props: true,
-    },
-    {
-      path: '/cld/:id',
-      name: 'ClientsDetail',
-      component: ClientsDetail,
-      props: true,
-
-    },
-    
-    {
-      path: '/teams',
-      name: 'TeamPage',
-      component: () => import('./components/admin/TeamPage.vue'), 
-    },
-    {
-      path: '/teamdetail/:id',
-      name: 'TeamDetail',
-      component: TeamDetail, 
-      props: true,
-    },
-    {
-      path: '/cl',
-      name: 'ClientsPage',
-      component: () => import('./components/admin/ClientsPage.vue'), 
-    },
-    {
-      path: '/company',
-      name: 'CompanyPage',
-      component: () => import('./components/admin/CompanyPage.vue'), 
-    }
-    ,{
-      path: '/meet',
-      name: 'MeetingPage',
-      component: () => import('./components/admin/MeetingPage.vue'),
-    },{
-      path: '/stats',
-      name: 'StatistiquesPage',
-      component: () => import('./components/admin/StatistiquesPage.vue'),
-    },
-    {
-      path: '/listd',
-      name: 'StatistiquesPage',
-      component: () => import('./components/admin/StatistiquesPage.vue'),
-    },
+      path: '/admin',
+      component: () => import('./components/admin/LayoutAdmin.vue'),
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: 'dash',
+          name: 'DashboardPage',
+          component: () => import('./components/admin/DashboardPage.vue'),
+        },
+        {
+          path: 'projects',
+          name: 'ProjectPage',
+          component: () => import('./components/admin/ProjectPage.vue'),
+        },
+        {
+          path: 'projet/:id',
+          name: 'projetDetails',
+          component: ProjectDetails,
+          props: true,
+        },
+        {
+          path: 'cld/:id',
+          name: 'ClientsDetail',
+          component: ClientsDetail,
+          props: true,
+        },
+        {
+          path: 'teams',
+          name: 'TeamPage',
+          component: () => import('./components/admin/TeamPage.vue'),
+        },
+        {
+          path: 'teamdetail/:id',
+          name: 'TeamDetail',
+          component: TeamDetail,
+          props: true,
+        },
+        {
+          path: 'cl',
+          name: 'ClientsPage',
+          component: () => import('./components/admin/ClientsPage.vue'),
+        },
+        {
+          path: 'company',
+          name: 'CompanyPage',
+          component: () => import('./components/admin/CompanyPage.vue'),
+        },
+        {
+          path: 'meet',
+          name: 'MeetingPage',
+          component: () => import('./components/admin/MeetingPage.vue'),
+        },
+        {
+          path: 'stats',
+          name: 'StatistiquesPage',
+          component: () => import('./components/admin/StatistiquesPage.vue'),
+        },
+        {
+          path: 'listd',
+          name: 'StatistiquesPage',
+          component: () => import('./components/admin/StatistiquesPage.vue'),
+        },
+      ],
+    },    
     {
       path: '/team',
       name: 'LayoutEquipe',
@@ -89,4 +102,20 @@ export default createRouter({
         ]
     }
   ],
+  
 });
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    //const token = localStorage.getItem('access_token');
+
+    if (!store.getters.isAuthenticated) {
+      next('/login'); // Rediriger vers la page de connexion si le jeton n'est pas présent
+    } else {
+      next();
+    }
+  } else {
+    next(); // Continuer vers d'autres routes non protégées
+  }
+});
+
+export default router;

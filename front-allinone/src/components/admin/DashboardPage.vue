@@ -90,7 +90,11 @@ export default {
   },
   mounted() {
   },
-  
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+  },
   methods: {
     groupProjectsByStatus() {
       // Regroupez les projets par statut
