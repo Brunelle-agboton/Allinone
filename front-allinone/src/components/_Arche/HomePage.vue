@@ -51,7 +51,7 @@
           </div>
           <div class="dropdown bottom-div">
           <hr>
-            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
             <div class="rounded-circle me-4 ppp"><i class="bi bi-person pppp"></i>
             <strong class="h6 profile"> Jupiter {{ username }}</strong>
           </div>
@@ -64,7 +64,7 @@
             </ul>
             </div>
           </div>
-        <div class="col-md-9 ms-sm-auto col-lg-12 px-md-4" style="margin-top: 30px; background-position: chartreuse;">
+        <div class="col-md-9 ms-sm-auto col-lg-12 px-md-4" style="margin-top: 30px;">
           <router-view />
         </div>
       </div>

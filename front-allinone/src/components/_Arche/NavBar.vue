@@ -1,10 +1,10 @@
 <template>
         <header class="navbar shadow">
-            <a class="navbar-brand " href="/admin"><img src="../../assets/icon.png" width="45" height="35" class="d-inline-block align-text-top hd">Allinone</a>
+            <a class="navbar-brand" style="justify-content: end;" href="/admin">Allinone</a>
             <ul class="nav col-12 col-md-auto mb-2  mb-md-0">
-                <li><a href="#" class="nav-link px-4 link-secondary" style="color: #002060 !important">Home</a></li>
-                <li><a href="#" class="nav-link px-4" style="color: #002060 !important">About</a></li>
-                <li><a href="#" class="nav-link px-4" style="color: #002060 !important">Assitance</a></li>
+                <li><a href="#" class="nav-link px-4 link-secondary" style="color: #000000 !important">Home</a></li>
+                <li><a href="#" class="nav-link px-4" style="color: #000000 !important">About</a></li>
+                <li><a href="#" class="nav-link px-4" style="color: #000000 !important">Assitance</a></li>
             </ul>
 
       <!-- <div class="col-md-3 text-end">

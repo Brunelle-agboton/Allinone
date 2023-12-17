@@ -5,7 +5,7 @@
       <div class="col-md-6">
         <div class="row">
           <div class="card mr-4">
-          <div class="card-header">Détails du Projet</div>
+          <div class="card-header" style="margin-top: 5% !important;">Détails du Projet</div>
           <div class="card-body">
             <!-- Formulaire de modification des champs -->
             <form>

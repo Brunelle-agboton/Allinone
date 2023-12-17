@@ -1,6 +1,6 @@
 /**/
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;  
+    font-family: Helvetica, Arial, sans-serif;  
   }
 .bi {
     vertical-align: -.125em;
@@ -11,23 +11,30 @@
 }
 body {
   margin:0px !important;
-  background-color: #EAE1D2 !important;
+  
+  background-color: #FFFFFF !important;
 }
 .profile {
   margin-left: 30%;
+  color: #000000 !important;
 }
 .ppp{
   justify-content: center;
   margin-left: 25%;
+  color: #000000 !important;
+
 }
 .pppp{
   font-size: xx-large;
   height: 3rem;
+  color: #000000 !important;
 
 }
 .connect {
-  border: 2px solid #77933c;
-  background-color: #d9d9d9;
+  border: 2px solid #FFFFFF;
+  background-color: #FFFFFF;
+  border: 1px solid #EC7D2C;
+
 }
 .admin-page {
   position: relative;
@@ -70,19 +77,20 @@ body {
   .sidebarMenu {
     position: fixed; /* Définir la position absolue */
     height: 94vh;
-    background-color: #77933C
+    background-color: #FFFFFF;
+    border-right: 1px solid #EC7D2C;
   }
   
   .sidebarMenu .nav-link {
     font-size: .875rem;
     font-weight: 500;
-    color: #fff;
+    color: #000000;
   
   }
   
   .sidebarMenu .nav-link.active {
-    color: #002060;
-    background: #9A7029;
+    color: #FFFFFF;
+    background: #002060;
   }
   .sidebarMenu .nav-link:focus + .nav-link:after {
     color: #002060;
@@ -102,7 +110,7 @@ body {
     position: absolute; 
     bottom: 0; /* La div sera placée en bas de la sidebarMenu */
     width: 100%;
-    color: #fff; /* Couleur du texte de la div */
+    color: #000000; /* Couleur du texte de la div */
     padding: 10px; 
     align-items:display;
   }
@@ -124,13 +132,12 @@ body {
   z-index: 1000;
   padding-top: .75rem;
   padding-bottom: .85rem;
-  background-color: #77933C;
+  background-color: #EC7D2C;
 }
 
 .navbar-brand {
   width: 12%;
   font-weight: 800;
-  color: #002060 !important;
   text-align: center;
   justify-content: space-between;
 }
@@ -194,13 +201,13 @@ body {
 }
 .fill1, .fill1:focus {
   border: none;
-   outline: none;
+  outline: none;
 }
 .table-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #ffffff;
+    background-color: #FFFFFF;
     padding-right: 5px;
     padding-left: 5px;
     margin-bottom: 2%;
@@ -210,7 +217,7 @@ body {
 }
 .btn-icon {
     background: none;
-    border: 1px solid #EAE1D2;
+    border: 1px solid #002060;
     cursor: pointer;
     font-size: 16px;
     align-items: center;
@@ -223,11 +230,11 @@ body {
     border: 1px solid #ddd;
     padding: 5px;
     border-radius: 3px;
-    background-color: #EAE1D2;
+    background-color: #FFFFFF;
 }
 .search .btn-icon {
     background-color: #002060;
-    color: #EAE1D2;
+    color: #FFFFFF;
     border: none;
     padding: 5px;
     border-radius: 3px;
@@ -239,7 +246,7 @@ body {
     border-radius: 3px;
 }
 .pactive {
-  background-color: #EAE1D2 !important;
+  background-color: #FFFFFF !important;
 }
 .lip {
   color: #002060 !important;
@@ -264,7 +271,7 @@ body {
 }
 /* Ajouter des séparateurs entre les cellules du tableau */
 th, td {
-  border: 1px solid #EAE1D2 !important;
+  border: 1px solid #FFFFFF !important;
   padding: 5px;
   cursor: pointer;  
   color: #002060;
@@ -352,7 +359,6 @@ table > table-hover {
 /*************************** ClientsPage Style **********************************/
 
 .client-page{
-  background-color: brown;
 }
 .client-list {
     margin: 5em;
@@ -382,16 +388,14 @@ table > table-hover {
     
   }
   .client-card {
-    border: 1px solid #d9d9d9;
-    border-right: 3px solid #77933c; /* Bordure verte à droite */
-    border-bottom: 3px solid #77933c; /* Bordure verte en bas */
+    border: 1px solid #EC7D2C;
     margin: 10px;
     padding: 0px;
     display: flex;
     flex-direction: column;
     position: relative;
     max-width: 300px;
-    background-color: #EAE1D2;
+    background-color: #FFFFFF;
   }
   
   .client-logo {
@@ -493,7 +497,7 @@ body {
   /*List-item.vue*/
   .li-card {
     width: 100%;
-    border: 2px solid #77933C !important;
+    border: 2px solid #FFFFFF !important;
   }
   
   .add-task{

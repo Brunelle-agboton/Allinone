@@ -71,7 +71,7 @@
                 <input type="checkbox" :id="'row' + project.idproject">
                 <label :for="'row' + project.idproject"></label>
               </td>-->
-              <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ project.idproject }}</router-link></td>
+              <td><router-link style="text-decoration: none; color: #000000;" :to="'projet/' + project.idproject">{{ project.idproject }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ project.name }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ project.description }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ formatDate(project.created_at) }}</router-link></td>
@@ -117,6 +117,7 @@ export default {
       console.log('Username:', user);
       return user;
     },
+    
   },
   methods: {
     // Afficher le modal

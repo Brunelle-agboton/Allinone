@@ -34,7 +34,7 @@ export default {
     return {
       username: '',
       password: '',
-      //tokenData: '',
+      tokenData: '',
     };
   },
   computed: {
@@ -49,16 +49,11 @@ export default {
         username: this.username,
         password: this.password,
       };
-      console.log(userData);
       login(userData)
       .then((response) => {
         AuthService.saveToken(response.data.access_token);
-        //console.log(response.data.access_token)
         this.$store.commit('setAdminLoggedIn', true);
-        const tokenData = AuthService.decodeToken()
-        
-        console.log(tokenData);
-
+        this.tokenData = AuthService.decodeToken()
         this.$router.push('/admin');
       })
       .catch((error) => {

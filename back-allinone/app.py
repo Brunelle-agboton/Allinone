@@ -75,7 +75,6 @@ def add_member():
     new_member = Member(username=data['username'], email=data.get('email'))
     new_member.set_password(data['password'])
 
-    
     try:
         db.session.add(new_member)
         db.session.commit()
@@ -434,6 +433,7 @@ def add_members_to_team(idteam):
 @jwt_required()
 def list_team():
     if not is_admin():
+        print('errors')
         return jsonify({"error": "Accès non autorisé"}), 403
 
     teams = ProjectTeam.query.all()
@@ -489,7 +489,7 @@ def get_team(idteam):
 @cross_origin()
 def update_team(idteam):
     data = request.get_json()
-    print(request)
+    # print(request)
     # Récupérer les détails de l'équipe depuis la base de données
     team =  db.session.get(ProjectTeam, idteam)
     if team is None:

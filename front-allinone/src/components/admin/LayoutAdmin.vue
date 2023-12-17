@@ -1,7 +1,6 @@
 <template>
     <div>
       <div class="admin-page" :class="{ 'blurred': !isAdminLoggedIn }">
-      <!-- Contenu de la page Admin -->
       <NavBar />
       <HomePage />
     </div>
