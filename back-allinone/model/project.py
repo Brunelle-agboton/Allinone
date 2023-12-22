@@ -103,7 +103,9 @@ class ProjectTeam(db.Model):
     
     # Définir les relations avec les autres tables
     members = db.relationship("Member", secondary='project_team_has_member', back_populates="teams")
+    
     projects = db.relationship("Project", back_populates="project_team") # Relation inverse avec la table Project
+    
     meetings=db.relationship("Meeting", back_populates="project_team")
     tasks=db.relationship("Tasks", back_populates="project_team")
 
@@ -160,7 +162,6 @@ class Tasks(db.Model):
     status_idstatus = db.Column(db.Integer, db.ForeignKey('status.idstatus'), nullable=False)
     project_project_team_idproject_team1 = db.Column(db.Integer, db.ForeignKey('project_team.idproject_team'), nullable=False)
     project_client_user_idclient_user1 = db.Column(db.Integer, db.ForeignKey('client_user.idclient_user'), nullable=False)
-    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'))
     project_idproject=db.Column(db.Integer, db.ForeignKey('project.idproject'))
     
     project = db.relationship("Project", foreign_keys=[project_idproject], back_populates="tasks")

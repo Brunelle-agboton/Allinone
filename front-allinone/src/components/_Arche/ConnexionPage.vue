@@ -25,8 +25,7 @@
 </template>
 
 <script>
-import {login, AuthService} from '@/services/AuthService';
-//import {mapActions, mapGetters} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 
 export default {
   name: 'ConnexionPage',
@@ -38,28 +37,38 @@ export default {
     };
   },
   computed: {
-    currentUser() {
-      return this.$store.state.auth.user;
-    },
+    ...mapGetters(['currentToken'], ['currentUser']), 
   },
   methods: {
-    handleSubmit(event) {
+    ...mapActions(['login']),
+
+    async handleSubmit(event) {
       event.preventDefault();
       const userData = {
         username: this.username,
         password: this.password,
       };
-      login(userData)
-      .then((response) => {
-        AuthService.saveToken(response.data.access_token);
-        this.$store.commit('setAdminLoggedIn', true);
-        this.tokenData = AuthService.decodeToken()
-        this.$router.push('/admin');
-      })
-      .catch((error) => {
-          console.log(error);
-        });      
+      try {
+        await this.login(userData);
+        if (this.currentToken !== ''){
+            if (this.$store.state.auth.user.role == 'admin') {
+              this.$router.push('/admin');
+              console.log(`Redirection de l'utilisateur après ${this.$store.state.auth.user.username} une connexion réussie.`);
+            }else {
+              this.$router.push('/team');
+            }
+                   
+          } else {
+            throw new Error('Invalid credentials');
+            }        
+      }
+      catch (error) {
+        alert(error.message);
+        }
     },
+    mounted() {
+    console.log(this.currentUser);
+  },
 } ,
 }
 </script>

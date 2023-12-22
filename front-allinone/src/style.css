@@ -212,15 +212,11 @@ body {
     padding-left: 5px;
     margin-bottom: 2%;
 }
-.table-cell {
-    display: inline-block;
-}
 .btn-icon {
     background: none;
     border: 1px solid #002060;
     cursor: pointer;
     font-size: 16px;
-    align-items: center;
 }
 .search {
     display: flex;
@@ -271,10 +267,9 @@ body {
 }
 /* Ajouter des séparateurs entre les cellules du tableau */
 th, td {
-  border: 1px solid #FFFFFF !important;
+  border: 1px solid #002060 !important;
   padding: 5px;
   cursor: pointer;  
-  color: #002060;
 }
 /* Ajouter des cases à cocher à chaque ligne */
 .checkbox-cell {
@@ -380,11 +375,13 @@ table > table-hover {
     }
 /*************************** ClientsDetail Style **********************************/
 /*************************** ClientCard Style **********************************/
-
+.client{
+  text-decoration: none;
+}
 .card-header {
     margin: 0px;
     height: 70px;
-    text-decoration: none;
+    background-color: #FFFFFF;
     
   }
   .client-card {
@@ -395,20 +392,24 @@ table > table-hover {
     flex-direction: column;
     position: relative;
     max-width: 300px;
-    background-color: #FFFFFF;
+    background-color: #FFFFFF;    
+
   }
   
   .client-logo {
-    width: 80px;
-    height: 70px;
+    width: 100px;
+    height: 71px;
     position: absolute;
     top: 0px;
     left: 0px;
   }
   
   .client-name {
-    color: #002060;
+    font-size: 1.5em;
+    margin-left: 40%;
     font-weight: bold;
+    justify-content: end !important;
+
   }
   
   

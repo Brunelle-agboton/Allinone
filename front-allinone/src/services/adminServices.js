@@ -12,10 +12,18 @@ const token = AuthService.getToken();
 
 /* Client*/
 export const getListClient = () => {
-  return apiUrl.get('/admin/clients');
+  return apiUrl.get('/admin/clients', {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 export const addClient = (data) => {
-  return apiUrl.post('/admin/client', data);
+  return apiUrl.post('/admin/client', data, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 }
 /* Projet*/
 
@@ -57,7 +65,7 @@ export const delProject = (id) => {
   return apiUrl.delete(`/admin/delp/${id}`);
 };
 
-/* Team*/
+/************************************************* Team **************************************************/
 export const getTeams = () => {
   return apiUrl.get('/admin/teams', {
     headers: {
@@ -83,6 +91,7 @@ export const editTeam = (id, data) => {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token}`,
     },
   });
 };
@@ -90,8 +99,20 @@ export const delTeam = (id) => {
   return apiUrl.delete(`/admin/delt/${id}`);
 };
 
+export const getMember = (id) => {
+  return apiUrl.get(`/team/member/${id}`, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
+}
+
 export const getMembers = () => {
-  return apiUrl.get(`/admin/members `);
+  return apiUrl.get(`/admin/members `, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 
 export const delMemberOfTeam = (idt,idm) => {
@@ -101,4 +122,13 @@ export const delMemberOfTeam = (idt,idm) => {
     },
   });
 };
+
+export const getProjectsTeam = (id) =>{
+  return apiUrl.get(`/team/project/${id}`, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
+};
+
 apiUrl

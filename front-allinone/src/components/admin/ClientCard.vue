@@ -17,7 +17,12 @@
         type: Object,
         required: true,
       },
+    }, 
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
     },
+  },
     methods: {
     },
   };

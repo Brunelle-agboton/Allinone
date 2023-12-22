@@ -4,7 +4,6 @@
       <NavBar />
       <HomePage />
     </div>
-
     <!-- Afficher ConnexionPage avec un fond transparent -->
     <div class="connexion-overlay" v-if="!isAdminLoggedIn">
       <ConnexionPage />
@@ -24,7 +23,6 @@ export default {
 name: 'LayoutAdmin',
 data() {
   return {
-    //isAdminLoggedIn: false,
   };
 },
 components: {

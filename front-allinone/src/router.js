@@ -4,7 +4,7 @@ import ClientsDetail from './components/admin/ClientsDetail.vue';
 import TeamDetail from './components/admin/TeamDetail.vue';
 import LayoutEquipe from './components/equipe/LayoutEquipe.vue';
 import TaskPage from './components/equipe/TaskPage.vue';
-import BoardPage from './components/equipe/BoardPage.vue'
+import ProjectTeamPage from './components/equipe/ProjectTeamPage.vue'
 import store from './store/auth';
 
 
@@ -90,26 +90,32 @@ const router = createRouter({
           component: () => import('./components/admin/StatistiquesPage.vue'),
         },
       ],
+    },
+    {
+      path: '/side',
+      name: 'SidebarPage',
+      component: () => import('./components/equipe/SidebarPage.vue'),
     },    
     {
-      path: '/team',
+      path: '/team/:id',
       name: 'LayoutEquipe',
       component: LayoutEquipe,
+      meta: { requiresAuth: true },
+      props: true,
       children:[
-        { path: 'tasks', name:'TaskPage', component: TaskPage},
-        { path: 'board', name:'BoardPage', component: BoardPage},
+        { path: 'tasks/:id', name:'TaskPage', component: TaskPage,props: true,},
+        { path: 'project/:id', name:'ProjectTeamPage', component: ProjectTeamPage,props: true,},
 
         ]
     }
   ],
   
 });
+
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    //const token = localStorage.getItem('access_token');
-
     if (!store.getters.isAuthenticated) {
-      next('/login'); // Rediriger vers la page de connexion si le jeton n'est pas présent
+      next('/auth'); // Rediriger vers la page de connexion si le jeton n'est pas présent
     } else {
       next();
     }

@@ -1,21 +1,35 @@
 <template>
-      <main class="col-lg-12 ms-sm-auto px-md-4" >
+  <div>
+    <div class="admin-page" :class="{ 'blurred': !isAdminLoggedIn }">
+      <NavBar />
+      <SidebarPage />
+    </div>
+    <!-- Afficher ConnexionPage avec un fond transparent -->
+    <div class="connexion-overlay" v-if="!isAdminLoggedIn">
+      <ConnexionPage />
+    </div>
+    
+    <!--<main class="col-lg-12 ms-sm-auto px-md-4" >
         <router-view />
-      </main>
+      </main>-->
+  </div>
 </template>
 
 <script>
-//import HomePage from '../_Arche/HomePage.vue'
-//import NavBar from '../_Arche/NavBar.vue'
+import SidebarPage from '../equipe/SidebarPage.vue'
+import NavBar from '../_Arche/NavBar.vue'
 
 export default {
   name: 'LayoutEquipe',
   components: {
-  //  HomePage,
-    //NavBar
-  }
-  
+    SidebarPage,
+    NavBar
+  },
+computed: {
+    isAdminLoggedIn() {
+      return this.$store.state.auth.isAdminLoggedIn;
+    },
+},
 }
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style src="../../style.css"> </style>

@@ -84,7 +84,13 @@
           
             <h5>Dernières Tâches Effectuées</h5>
             <ul>
-              <li v-for="tache in dernieresTachesEffectuees" :key="tache.idtache">{{ tache }}</li>
+              <router-link style="text-decoration: none; color: #002060;"
+                v-for="tache in dernieresTachesEffectuees"
+                :to="'/team/' + cuser"
+                :key="tache.idtache"
+              >
+                <li>{{ tache }}</li>
+              </router-link>
             </ul>
           </div>
         </div>
@@ -104,13 +110,14 @@
 
 <script>
 import {getProject, editProject, delProject, getTeams} from '@/services/adminServices';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 
 export default {
   name: 'ProjectDetails',
   data() {
     return {
+      cuser: 0,
       project: {
         team: {
         idproject_team: null,
@@ -126,12 +133,13 @@ export default {
   },
   computed: {
     ...mapState(['modifications']),
+    ...mapGetters(['currentUser']),
+
     dynamicModel: {
     get() {
       return "000" + this.project.idproject;
     },
     set(value) {
-      // Vous pouvez définir une logique ici si nécessaire
       console.log("Nouvelle valeur :", value);
     },
   },
@@ -172,6 +180,7 @@ export default {
     .then(response => {
       if (response.status == 200)
         this.project = response.data
+        this.cuser=this.project.iduser;
          // console.log(this.project.team);
     })
     .catch(error => {

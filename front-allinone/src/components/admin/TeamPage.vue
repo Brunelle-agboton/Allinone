@@ -29,13 +29,13 @@
                 </div>
       <div class="table-cell">
           <button class="btn-icon"><i class="bi bi-filetype-csv"></i></button>
-      </div>
-      <div class="table-cell">
-          <button class="btn-icon"><i class="bi bi-funnel-fill"></i> Filtrer</button>
-          <input type="text" class="col-lg-4">
-      </div>
+      </div> 
+      <div class="table-cell fill">
+                  <i class="bi bi-funnel-fill"></i>
+                  <input type="text" class="col-lg-4 fill1" placeholder="Filtrer">
+            </div>
       <div class="table-cell col-lg-4 search">
-          <input type="text" placeholder="Rechercher..." class="col-lg-8">
+          <input type="text" placeholder="Rechercher..." class="col-lg-10">
           <button class="btn-icon"><i class="bi bi-search"></i></button>
       </div>
       <div class="table-cell">
@@ -71,6 +71,14 @@
         </tr>
       </thead>
       <tbody >
+        <!--<tr v-for="(row, index) in tableData" :key="index">
+      <router-link :to="'/teamdetail/' + row.idteam">
+        <td>{{ row.idteam }}</td>
+        <td>{{ row.name }}</td>
+        <td>{{ row.description }}</td>
+        <td>{{ row.created_at }}</td>
+      </router-link>
+    </tr>-->
         <tr v-for="(row, index) in tableData"
       :to="'/teamdetail/' + row.idteam" 
       :key="index"  >
@@ -100,6 +108,11 @@ export default {
       },
       dialogVisible: false, // Contrôle l'affichage de la boîte de dialogue
     };
+  },
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
   },
   methods: {
     openDialog() {

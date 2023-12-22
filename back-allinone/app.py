@@ -56,12 +56,8 @@ def handle_options():
 @jwt_required()
 def is_admin():
     current_user = get_jwt_identity()
-    print(current_user)
+    #print(current_user)
     return current_user.get('role') == 'admin'
-
-actual_date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-expired_at = actual_date.strftime('%Y-%m-%dT%H:%M:%S')
-
 
 #*****************************************************************Vue Admin******************************************
 ##################### Gestion des membres ############################
@@ -119,7 +115,6 @@ def create_client():
         return jsonify({'message': 'Missing client data'}), 400
 # Modifier les informations d'un client
 # Archiver un client
-
 # Supprimer un client
 @app.route('/admin/client/<int:idclient>', methods=['DELETE'])
 def delete_client(idclient):
@@ -140,6 +135,7 @@ def delete_client(idclient):
 def list_client():
     if not is_admin():
         return jsonify({"error": "Accès non autorisé"}), 403
+    
     clients = db.session.query(ClientUser).all()
     if clients:
         client_list = [{'idproject': client.idclient_user, 
@@ -151,7 +147,7 @@ def list_client():
         client_list = []
     return jsonify(client_list)
   
-##################### Projets ############################
+########################################################################################### Projets ############################
 @app.route('/admin/project', methods=['POST'])
 @cross_origin()
 @jwt_required()
@@ -205,22 +201,19 @@ def create_project():
     
     return jsonify({'message': 'Project created successfully', 'idproject': new_project.idproject}), 201
 
-#Route pour recuperer un projet avec son id
+#Route pour recuperer un projet avec son id depuis la vue admin
 @app.route('/admin/project/<int:idproject>')
 @cross_origin()
 @jwt_required()
 def get_project(idproject):
     if not is_admin():
         return jsonify({"error": "Accès non autorisé"}), 403
+    current_user = get_jwt_identity()
 
     # Recuperer le projet correspondant à l'ID
     project = db.session.get(Project, idproject)
-
     if project is not None:
-         # Accédez aux relations et récupérez les données associées
         comments = [comment.comments_lib for comment in project.comments]
-        # tasks = [task.task_name for task in project.tasks]
-        # resumes = [resume.resume_content for resume in project.resumes]
         if project.project_team:
             team_data = {
                 'idproject_team': project.project_team.idproject_team,
@@ -228,21 +221,13 @@ def get_project(idproject):
                 'team_description': project.project_team.team_description,
                 'created_at': project.project_team.created_at.strftime("%Y-%m-%d"),
                 'updated_at': project.project_team.updated_at.strftime("%Y-%m-%d")
-                # Ajoutez d'autres champs si nécessaire
             }
         else:
             team_data = None
-        #if team:
-        #    team_members = team.members
-        #    team_members_all = [member.name for member in team_members]
-        #    team_members_all.append(team_members.idproject_team)
-        #else:
-        #    team_members_all = []
-        
         created_date = project.created_at.strftime("%Y-%m-%d")
-        expired_date = project.expired_at.strftime("%Y-%m-%d")
-        
-        project_data = {'idproject': project.idproject, 
+        expired_date = project.expired_at.strftime("%Y-%m-%d")        
+        project_data = {'iduser': current_user.get('id'),
+                        'idproject': project.idproject, 
                         'project_name': project.project_name, 
                         'description': project.project_description, 
                         'expired_at': expired_date, 
@@ -256,7 +241,43 @@ def get_project(idproject):
         return jsonify(project_data)
     else:
         return jsonify({"error": "Projet non trouvé"}), 404
-    
+
+#Route pour recuperer un projet avec son id depuis la vue equipe
+@app.route('/team/project/<int:idproject>')
+@cross_origin()
+@jwt_required()
+def get_team_project(idproject):
+    # Recuperer le projet correspondant à l'ID
+    project = db.session.get(Project, idproject)
+    if project is not None:
+        if project.project_team:
+            team_data = {
+                'idproject_team': project.project_team.idproject_team,
+                'team_name': project.project_team.team_name,
+                'members': [{'idmember': m.idmember, 'username': m.username} for m in project.project_team.members]
+            }
+        else:
+            team_data = None
+            
+        created_date = project.created_at.strftime("%Y-%m-%d")
+        expired_date = project.expired_at.strftime("%Y-%m-%d")
+        alltasks=[]
+        if project.tasks:
+            alltasks= [{'idtask':t.idtasks, 'tasks_description':t.tasks_description, 'tasks_status':t.status_idstatus} for t in project.tasks ]        
+        project_data = {'idproject': project.idproject, 
+                        'project_name': project.project_name, 
+                        'description': project.project_description, 
+                        'expired_at': expired_date, 
+                        'created_at': created_date, 
+                        'status': project.project_status, 
+                        'requirement': project.requirement,
+                        'team': team_data,
+                        'tasks': alltasks
+                        }  
+        return jsonify(project_data)
+    else:
+        return jsonify({"error": "Projet non trouvé"}), 404
+
 # Route pour modifier un projet, son status et son commentaire
 @app.route('/admin/editp/<int:idproject>', methods=['PUT'])
 @cross_origin()
@@ -347,7 +368,7 @@ def list_project():
         project_list = []
     return jsonify(project_list)
     
-##################### Equipe ############################
+###################################################################### Equipe ##########################################################
 # Creer une nouvelle equipe
 @app.route('/admin/team', methods=['POST'])
 def create_team():
@@ -365,68 +386,6 @@ def delete_team(idteam):
     db.session.delete(team)
     db.session.commit()
     return jsonify({'message': 'Team supprime avec succes'}), 200
-
-# Retirer un membre d'une equipe
-@app.route('/admin/team/<int:idteam>/del/<int:idmember>', methods=['DELETE'])
-@cross_origin()
-def delete_member_to_team(idteam, idmember):
-    print(request)
-    team = db.session.get(ProjectTeam, idteam)
-    if not team:
-        return jsonify({'message': 'L\'équipe n\'existe pas'}), 404
-    
-    member = db.session.get(Member, idmember)
-        
-    if not member:
-        return jsonify({'message': 'Le membre n\'existe pas'}), 404
-
-    team_member_relation = ProjectTeamHasMember.query.filter_by(
-        project_team_idproject_team=team.idproject_team,
-        member_idmember=member.idmember
-    ).first()
-    db.session.delete(team_member_relation)
-    db.session.commit()
-    
-    return jsonify({'message': 'Membre retire de l\'équipe avec succès'}), 201
-    
-# Ajouter un membre a une equipe
-@app.route('/admin/team/<int:idteam>', methods=['POST'])
-def add_members_to_team(idteam):
-    try:
-        # Recherche de l'équipe par ID
-        team = ProjectTeam.query.get(idteam)
-    
-        if not team:
-            return jsonify({'message': 'L\'équipe n\'existe pas'}), 404
-
-        # Récupérez les données du membre à ajouter depuis la requête POST
-        data = request.get_json()
-        username = data.get('username') 
-
-        if not username:
-            return jsonify({'message': 'L\'ID du membre est requis'}), 400
-
-        # Recherche du membre par son nom
-        member = Member.query.filter_by(username=username).first()
-        
-        if not member:
-            return jsonify({'message': 'Le membre n\'existe pas'}), 404
-
-        # Créez une relation entre l'équipe et le membre
-        team_member_relation = ProjectTeamHasMember(
-            project_team_idproject_team=team.idproject_team,
-            member_idmember=member.idmember
-        )
-
-        # Ajoutez la relation à la base de données
-        db.session.add(team_member_relation)
-        db.session.commit()
-
-        return jsonify({'message': 'Membre ajouté à l\'équipe avec succès'}), 201
-
-    except Exception as e:
-        # Gérez les erreurs appropriées ici
-        return jsonify({'message': 'Une erreur est survenue lors de l\'ajout du membre à l\'équipe'}), 500
 
 @app.route('/admin/teams', methods=['GET'])
 @cross_origin()
@@ -450,12 +409,11 @@ def list_team():
         team_list = []
     return jsonify(team_list)
 
-# Liste des projets d'une equipe
+# Recuperer les information d' une equipe
 @app.route('/admin/team/<int:idteam>', methods=['GET'])
 @cross_origin()
 @jwt_required()
 def get_team(idteam):
-    
     team =  db.session.get(ProjectTeam, idteam)
     if team is not None:
         #Récupérer tous les projets de l'équipe
@@ -517,65 +475,12 @@ def update_team(idteam):
     
     return jsonify(team_data), 200
 
-##################### Stats ############################
 
-##################### Autre ############################
-#
-"""
-Elle récupère les données de la requête et vérifie si username, email et mot de passe sont présents
-Puis le nouvequ membre est créé avec le role correspondant
-"""
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.get_json()
-
-    if 'username' not in data or 'password' not in data or 'email' not in data:
-        return jsonify({'message': 'Le nom d\'utilisateur, le mot de passe et l\'email sont requis'}), 400
-
-    new_member = Member(username=data['username'], email=data.get('email'))
-    new_member.set_password(data['password'])
-
-    # Ajouter le rôle utilisateur par défaut
-    user_role = Role.query.filter_by(user=True).first()
-    new_member.roles.append(user_role)
-
-    try:
-        db.session.add(new_member)
-        db.session.commit()
-        return jsonify({'message': 'Membre créé avec succès'}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
-
-@app.route('/login', methods=['POST'])
-@cross_origin()
-def login():
-    
-    data = request.get_json()
-
-    if 'username' not in data or 'password' not in data:
-        return jsonify({'message': 'Le nom d\'utilisateur et le mot de passe sont requis'}), 400
-
-    member = Member.query.filter_by(username=data['username']).first()
-    role =''
-    if member and member.check_password(data['password']):
-        roles = [role.idrole for role in member.roles]
-
-        if roles[0] == 3:
-            role = 'admin'
-            print(roles[0], role)
-
-        access_token = create_access_token(identity={'id': member.idmember,'username': member.username, 'role': role, 'expired_at' : expired_at})
-
-        return jsonify(access_token=access_token), 200
-    else:
-        return jsonify({'message': 'Nom d\'utilisateur ou mot de passe incorrect'}), 401
-
-#*****************************************************************************Vue Equipe Projet********************************************************#
-
-##################### Tasks ############################
+#################################################### Tasks ############################
 # Ajouter une tache
 @app.route('/project/<int:idproject>/tasks', methods=['POST'])
+@cross_origin()
+@jwt_required()
 def create_task(idproject):
     data = request.get_json()
     new_task = Tasks(
@@ -590,6 +495,8 @@ def create_task(idproject):
 
 # Modifier une tache
 @app.route('/project/<int:idproject>/tasks/<int:idtasks>', methods=['PUT'])
+@cross_origin()
+@jwt_required()
 def update_task(idproject, idtasks):
     data = request.get_json()
     task = Tasks.query.filter_by(idtasks=idtasks, project_idproject=idproject).first()
@@ -611,6 +518,8 @@ def update_task(idproject, idtasks):
 
 # Suprimer une tache
 @app.route('/project/<int:idproject>/tasks/<int:idtasks>', methods=['DELETE'])
+@cross_origin()
+@jwt_required()
 def delete_task(idproject, idtasks):
     task = Tasks.query.filter_by(idtasks=idtasks, project_idproject=idproject).first()
 
@@ -623,6 +532,8 @@ def delete_task(idproject, idtasks):
 
 # Assiggner une tache a un membre
 @app.route('/project/<int:idproject>/tasks/<int:idtasks>/assign-member', methods=['POST'])
+@cross_origin()
+@jwt_required()
 def assign_task_to_members(idtasks):
     task = Tasks.query.get(idtasks)
     if not task:
@@ -650,6 +561,8 @@ def assign_task_to_members(idtasks):
 
 #Modifier un membre d'une tache
 @app.route('/project/<int:idproject>/tasks/<int:idtasks>/assign-member', methods=['PUT'])
+@cross_origin()
+@jwt_required()
 def change_task_member(idproject, idtasks):
     task = Tasks.query.get(idtasks)
     if not task:
@@ -683,6 +596,8 @@ def change_task_member(idproject, idtasks):
 
 #Supprimer un membre d'une tache
 @app.route('/project/<int:idproject>/tasks/<int:idtasks>/members/<int:idmember>', methods=['DELETE'])
+@cross_origin()
+@jwt_required()
 def remove_task_member(idproject, idtasks, idmember):
     task = Tasks.query.get(idtasks)
     if not task:
@@ -706,6 +621,8 @@ def remove_task_member(idproject, idtasks, idmember):
 
 #Ajouter un domain a un membre
 @app.route('/assign-member-to-domain/<int:member_id>/<int:domain_id>', methods=['POST'])
+@cross_origin()
+@jwt_required()
 def assign_member_to_domain(member_id, domain_id):
     member = Member.query.get(member_id)
     if not member:
@@ -719,6 +636,153 @@ def assign_member_to_domain(member_id, domain_id):
     db.session.commit()
 
     return jsonify({'message': 'Membre assigné au domaine avec succès'}), 200
+
+
+############################################### Gestion des membres ############################
+@app.route('/team/member/<int:idmember>', methods=['GET'])
+@cross_origin()
+@jwt_required()
+def get_member(idmember):
+    # Récupérer le membre correspondant à l'ID
+    member =  db.session.get(Member, idmember)
+    
+    projects=[]
+    if member:
+        if member.tasks:
+            projects= [{'idproject':p.idproject, 'name': p.project_name} for p in member.tasks.project ]        
+
+        # Créer un dictionnaire avec les détails du membre
+        member_data = {
+            'idmember': member.idmember,
+            'username': member.username,
+            'email': member.email,
+            'projects': projects
+        }
+
+        return jsonify(member_data)
+    else:
+        return jsonify({"error": "Membre non trouvé"}), 404
+
+# Retirer un membre d'une equipe
+@app.route('/admin/team/<int:idteam>/del/<int:idmember>', methods=['DELETE'])
+@cross_origin()
+@jwt_required()
+def delete_member_to_team(idteam, idmember):
+    print(request)
+    team = db.session.get(ProjectTeam, idteam)
+    if not team:
+        return jsonify({'message': 'L\'équipe n\'existe pas'}), 404
+    
+    member = db.session.get(Member, idmember)
+        
+    if not member:
+        return jsonify({'message': 'Le membre n\'existe pas'}), 404
+
+    team_member_relation = ProjectTeamHasMember.query.filter_by(
+        project_team_idproject_team=team.idproject_team,
+        member_idmember=member.idmember
+    ).first()
+    db.session.delete(team_member_relation)
+    db.session.commit()
+    
+    return jsonify({'message': 'Membre retire de l\'équipe avec succès'}), 201
+    
+# Ajouter un membre a une equipe
+@app.route('/admin/team/<int:idteam>', methods=['POST'])
+@cross_origin()
+@jwt_required()
+def add_members_to_team(idteam):
+    try:
+        # Recherche de l'équipe par ID
+        team = ProjectTeam.query.get(idteam)
+    
+        if not team:
+            return jsonify({'message': 'L\'équipe n\'existe pas'}), 404
+
+        # Récupérez les données du membre à ajouter depuis la requête POST
+        data = request.get_json()
+        username = data.get('username') 
+
+        if not username:
+            return jsonify({'message': 'L\'ID du membre est requis'}), 400
+
+        # Recherche du membre par son nom
+        member = Member.query.filter_by(username=username).first()
+        
+        if not member:
+            return jsonify({'message': 'Le membre n\'existe pas'}), 404
+
+        # Créez une relation entre l'équipe et le membre
+        team_member_relation = ProjectTeamHasMember(
+            project_team_idproject_team=team.idproject_team,
+            member_idmember=member.idmember
+        )
+
+        # Ajoutez la relation à la base de données
+        db.session.add(team_member_relation)
+        db.session.commit()
+
+        return jsonify({'message': 'Membre ajouté à l\'équipe avec succès'}), 201
+
+    except Exception as e:
+        # Gérez les erreurs appropriées ici
+        return jsonify({'message': 'Une erreur est survenue lors de l\'ajout du membre à l\'équipe'}), 500
+
+
+############################################################################## Stats ############################
+
+########################################################################## Autre ############################
+#
+"""
+Elle récupère les données de la requête et vérifie si username, email et mot de passe sont présents
+Puis le nouvequ membre est créé avec le role correspondant
+"""
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+
+    if 'username' not in data or 'password' not in data or 'email' not in data:
+        return jsonify({'message': 'Le nom d\'utilisateur, le mot de passe et l\'email sont requis'}), 400
+
+    new_member = Member(username=data['username'], email=data.get('email'))
+    new_member.set_password(data['password'])
+
+    # Ajouter le rôle utilisateur par défaut
+    user_role = Role.query.filter_by(user=True).first()
+    new_member.roles.append(user_role)
+
+    try:
+        db.session.add(new_member)
+        db.session.commit()
+        return jsonify({'message': 'Membre créé avec succès'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
+
+expired_at = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+
+@app.route('/login', methods=['POST'])
+@cross_origin()
+def login():
+    
+    data = request.get_json()
+    if 'username' not in data or 'password' not in data:
+        return jsonify({'message': 'Le nom d\'utilisateur et le mot de passe sont requis'}), 400
+
+    member = Member.query.filter_by(username=data['username']).first()
+    role =''
+    if member and member.check_password(data['password']):
+        roles = [role.idrole for role in member.roles]
+
+        if roles[0] == 3:
+            role = 'admin'
+        elif roles[0] == 2:
+            role = 'user'
+        access_token = create_access_token(identity={'id': member.idmember,'username': member.username, 'role': role}, expires_delta= datetime.timedelta(hours=1))
+
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({'message': 'Nom d\'utilisateur ou mot de passe incorrect'}), 401
 
 
 if __name__ == '__main__':

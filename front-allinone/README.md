@@ -1,5 +1,11 @@
 # front-allinone
+```
+git clone git@rendu-git.etna-alternance.net:module-9363/activity-50787/group-1004630
+```
 
+```
+cd frontend
+```
 ## Project setup
 ```
 npm install
