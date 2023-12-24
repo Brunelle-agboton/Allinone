@@ -131,4 +131,12 @@ export const getProjectsTeam = (id) =>{
   });
 };
 
+export const addTask = (id,data) => {
+  return apiUrl.post(`/project/${id}/tasks`, data, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
+};
+
 apiUrl

@@ -98,7 +98,7 @@ export default {
   mounted() {
     if (this.currentToken !== ''){
       const cuser = AuthService.decodeToken();
-
+      console.log(cuser);
       this.$store.commit('setUser', cuser.payload.sub)
     this.username = this.currentUser.username;
   }
