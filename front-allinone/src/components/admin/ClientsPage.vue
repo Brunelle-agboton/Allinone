@@ -48,7 +48,6 @@ data() {
           client.logo = "icon.png";
           this.clients.push(client)
           });
-          // console.log(response.data)
         })
         .catch((error) => {
           console.error(error)

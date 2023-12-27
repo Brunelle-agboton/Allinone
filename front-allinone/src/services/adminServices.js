@@ -8,7 +8,6 @@ axios.defaults.withCredentials = true;
 
 
 const token = AuthService.getToken();
-//axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 /* Client*/
 export const getListClient = () => {

@@ -54,7 +54,8 @@ export default {
             if (this.$store.state.auth.user.role == 'admin') {
               this.$router.push('/admin/dash');
               console.log(`Redirection de l'utilisateur après ${this.$store.state.auth.user.username} une connexion réussie.`);
-            }else {
+            }
+            else {
               this.$router.push('/team');
             }
                    

@@ -7,7 +7,7 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: Emmanuel_7
       MYSQL_DATABASE: db_allinone
-      MYSQL_USER: root
+      MYSQL_USER: allinone
   back:
     build:
       context: ./back-allinone
@@ -20,7 +20,7 @@ services:
     environment:
       - DB_DATA_Host=mysql
       - DB_DATA_Database=db_allinone
-      - DB_DATA_User=root
+      - DB_DATA_User=allinone
       - DB_DATA_Password=Emmanuel_7
     networks:
       - back-tier
@@ -38,7 +38,7 @@ services:
       - back-tier
     environment:
       VUES_DB_HOST: mysql:3306
-      VUES_DB_USER: root
+      VUES_DB_USER: allinone
       VUES_DB_PASSWORD: Emmanuel_7
       VUES_DB_NAME: brunelle
   

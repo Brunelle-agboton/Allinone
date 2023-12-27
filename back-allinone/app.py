@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
 
+
 app = Flask(__name__)
 jwt = JWTManager(app)
 
@@ -27,8 +28,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 db = SQLAlchemy()
 
 # Configurer l'environnement de développement
-app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
-app.config['FLASK_DEBUG'] = os.getenv('FLASK_DEBUG')
+#app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
+#app.config['FLASK_DEBUG'] = os.getenv('FLASK_DEBUG')
 
 from model.project import *
 
@@ -783,19 +784,25 @@ expired_at = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 @app.route('/api/login', methods=['POST'])
 @cross_origin()
 def login():
-    
+    #Récupération des données dans la requête
     data = request.get_json()
     
+    #Vérification des champs obligatoires
     if 'username' in data and 'password' in data:
         member = Member.query.filter_by(username=data['username']).first()
         role =''
         if member and member.check_password(data['password']):
             roles = [role.idrole for role in member.roles]
-            if roles[0] == 2:
+            if roles[0] == 1:
+                role = 'super-admin'
+            elif roles[0] == 2:
                 role = 'admin'
             elif roles[0] == 3:
                 role = 'user'
-                
+            elif roles[0] == 3:
+                role = 'client'
+            
+            #Génération d'un token à partir des données en paramètres    
             access_token = create_access_token(identity={'id': member.idmember,'username': member.username, 'role': role}, expires_delta= datetime.timedelta(hours=1))
             return jsonify(access_token=access_token), 200
         
@@ -804,4 +811,4 @@ def login():
 
 if __name__ == '__main__':
     db.init_app(app)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
