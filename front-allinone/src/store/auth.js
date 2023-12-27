@@ -44,9 +44,11 @@ export default {
       try{
         const response = await authenticate(user);
         await AuthService.saveToken(response.data.access_token);
-        const cuser = AuthService.decodeToken();
-        await commit('setUser', cuser.payload.sub);
 
+        const cuser = AuthService.decodeToken();
+
+        await commit('setUser', cuser.payload.sub);
+        console.log("set ik");
         await commit('setAdminLoggedIn', true);
         } catch(err) {
           console.log("Error in Login Action", err);

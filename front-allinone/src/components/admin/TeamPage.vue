@@ -2,31 +2,9 @@
   <div class="col-md-9 ms-sm-auto col-lg-10 px-md-2 flex-1">
     <div class="table-row">
       <div class="table-cell">
-      <button type="button" class="btn-icon" @click="openDialog" data-test="mod"><i class="bi bi-plus"></i>Ajouter</button>
-      <div class="modal modal-sm" :class="{ 'is-active': dialogVisible }">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-          <form @submit.prevent="addRow">
-          <div class="form-group">
-            <label for="ident">Code</label>
-            <input type="text" class="form-control" id="ident" v-model="newRow.idteam" required>
-          </div>
-          <div class="form-group">
-            <label for="team_name">Nom de l'équipe</label>
-            <input type="text" class="form-control" id="team_name" v-model="newRow.team_name" required>
-          </div>
-          <div class="form-group">
-            <label for="desc">Description </label>
-            <input type="text" class="form-control" id="desc" v-model="newRow.description" required>
-          </div>
-          <!-- Vous pouvez ajouter des champs pour les autres colonnes ici -->
-          <button type="submit" class="btn btn-primary">Enregistrer</button>
-          <button @click="closeDialog" class="modal-close is-large" aria-label="close">Fermer</button>
-
-        </form>
-        </div>
+        <button type="button" class="btn-icon" @click="openDialog" @close="closeDialog" data-bs-toggle="modal" data-bs-target="#backdrop" data-test="mod"><i class="bi bi-plus"></i>Ajouter</button>
+        <TeamForm1 v-show="dialogVisible" />
       </div>
-                </div>
       <div class="table-cell">
           <button class="btn-icon"><i class="bi bi-filetype-csv"></i></button>
       </div> 
@@ -50,13 +28,22 @@
           <button class="btn-icon imprimer"><i class="bi bi-printer"></i></button>
       </div>
       <div class="table-cell pagination">
-          <span>elements</span>
-          <button class="btn-icon"><i class="bi bi-chevron-double-left"></i></button>
-          <button class="btn-icon"><i class="bi bi-chevron-left"></i></button>
-          <span class="page-number">1</span>
-          <span class="page-number">2</span>
-          <button class="btn-icon"><i class="bi bi-chevron-right"></i></button>
-          <button class="btn-icon"><i class="bi bi-chevron-double-right"></i></button>
+        <ul class="pagination">
+                <span class="pagination">éléments</span>
+
+    <li class="page-item lip">
+      <a class="page-link lip" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li class="page-item lip" aria-current="page"><a class="page-link pactive lip" href="#">1</a></li>
+    <li class="page-item lip"><a class="page-link lip" href="#">2</a></li>
+    <li class="page-item ">
+      <a class="page-link lip" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
       </div>
     </div>
    
@@ -64,29 +51,20 @@
       
       <thead>
         <tr>
-          <th>code</th>
-          <th>Nom de l'equipe</th>
+          <th>Code</th>
+          <th>Nom de l'équipe</th>
           <th>Description</th>
-          <th>Cree le </th>
+          <th>Créé le </th>
         </tr>
       </thead>
       <tbody >
-        <!--<tr v-for="(row, index) in tableData" :key="index">
-      <router-link :to="'/teamdetail/' + row.idteam">
-        <td>{{ row.idteam }}</td>
-        <td>{{ row.name }}</td>
-        <td>{{ row.description }}</td>
-        <td>{{ row.created_at }}</td>
-      </router-link>
-    </tr>-->
-        <tr v-for="(row, index) in tableData"
-      :to="'/teamdetail/' + row.idteam" 
+        <tr v-for="(team, index) in tableData"
       :key="index"  >
           
-      <td>{{ row.idteam }}</td>
-          <td>{{ row.name }}</td>
-          <td>{{ row.description }}</td>
-          <td>{{ row.created_at }}</td>
+      <td><router-link style="text-decoration: none; color: #000000;" :to="'teamdetail/' + team.idteam">{{ team.idteam }}</router-link></td>
+      <td><router-link style="text-decoration: none; color: #000000;" :to="'teamdetail/' + team.idteam">{{ team.name }}</router-link></td>
+      <td><router-link style="text-decoration: none; color: #000000;" :to="'teamdetail/' + team.idteam">{{ team.description }}</router-link></td>
+      <td><router-link style="text-decoration: none; color: #000000;" :to="'teamdetail/' + team.idteam">{{ formatDate(team.created_at ) }}</router-link></td>
         </tr>
       </tbody>
     </table>
@@ -96,6 +74,8 @@
 
 <script>
 import {addTeam, getTeams} from '@/services/adminServices';
+import TeamForm1 from '../_Forms/TeamForm1.vue';
+
 
 export default {
   name: 'TeamPage',
@@ -103,11 +83,14 @@ export default {
     return {
       tableData: [ ], 
       newRow: {
-        team_name: "",
-        team_description: "",
+        team_name: '',
+        team_description: '',
       },
       dialogVisible: false, // Contrôle l'affichage de la boîte de dialogue
     };
+  },
+  components: {
+  TeamForm1
   },
   computed: {
     currentUser() {
@@ -124,28 +107,27 @@ export default {
     },
     resetForm() {
         this.team_name = '';
-        this.desc = '';
+        this.team_description = '';
     },
 
     addRow() {
+      console.log(this.newRow);
       addTeam(this.newRow)
       .then(response => {
-                    if (response.status == 200)
-                      alert("L'equipe a été ajoutée avec succès");
-                    const idp =response.data;
-                    console.log(idp);
-
-                    this.resetForm(); 
-                    this.closeDialog(); 
-                })
-                .catch(error => {
-                    console.error('Erreur lors de l\'ajout de lequipe:', error);
-                });
-
-      // Ajoute la nouvelle ligne aux données du tableau
-      //this.tableData.push({ ...this.newRow });
+        if (response.status == 200)
+          alert("L'equipe a été ajoutée avec succès");
+        this.resetForm(); 
+        this.closeDialog(); 
+    })
+    .catch(error => {
+        console.error('Erreur lors de l\'ajout de lequipe:', error);
+    });
     },
-
+    formatDate(dateString) {
+      const options = { day: 'numeric', month: 'short', year: 'numeric' };
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', options);
+      },
     fetchData() {
       getTeams()
         .then((response) => {

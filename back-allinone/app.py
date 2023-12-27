@@ -43,10 +43,10 @@ def hello_world():
 
 #@app.after_request
 #def after_request(response):
- #   response.headers['Access-Control-Allow-Methods']='*'
-  #  response.headers['Access-Control-Allow-Origin']='*'
-   # response.headers['Vary']='Origin'
-    #return response
+#   response.headers['Access-Control-Allow-Methods']='*'
+#   response.headers['Access-Control-Allow-Origin']='*'
+#   response.headers['Vary']='Origin'
+#   return response
 
 
 @app.route('/', methods=['OPTIONS'])
@@ -61,7 +61,7 @@ def is_admin():
 
 #*****************************************************************Vue Admin******************************************
 ##################### Gestion des membres ############################
-@app.route('/admin/mem', methods=['POST'])
+@app.route('/api/admin/mem', methods=['POST'])
 def add_member():
     data = request.get_json()
 
@@ -79,7 +79,7 @@ def add_member():
         db.session.rollback()
         return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
 
-@app.route('/admin/members', methods=['GET'])
+@app.route('/api/admin/members', methods=['GET'])
 def get_members():
     members = Member.query.all()
     output = []
@@ -89,8 +89,13 @@ def get_members():
     return jsonify(output)
 ##################### Clients ############################
 # Ajouter un nouveau client
-@app.route('/admin/client', methods=['POST'])
+@app.route('/api/admin/client', methods=['POST'])
+@cross_origin()
+@jwt_required()
 def create_client():
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     data = request.get_json() 
     
     if 'street' in data and 'city' in data and 'postal_code' in data and 'country' in data:
@@ -116,7 +121,7 @@ def create_client():
 # Modifier les informations d'un client
 # Archiver un client
 # Supprimer un client
-@app.route('/admin/client/<int:idclient>', methods=['DELETE'])
+@app.route('/api/admin/client/<int:idclient>', methods=['DELETE'])
 def delete_client(idclient):
     client = ClientUser.query.get(idclient)
 
@@ -129,7 +134,7 @@ def delete_client(idclient):
     return jsonify({'message': 'Client deleted successfully'}), 200
 
 # Liste des clients
-@app.route('/admin/clients', methods=['GET'])
+@app.route('/api/admin/clients', methods=['GET'])
 @cross_origin()
 @jwt_required()
 def list_client():
@@ -148,7 +153,7 @@ def list_client():
     return jsonify(client_list)
   
 ########################################################################################### Projets ############################
-@app.route('/admin/project', methods=['POST'])
+@app.route('/api/admin/project', methods=['POST'])
 @cross_origin()
 @jwt_required()
 def create_project():
@@ -186,13 +191,17 @@ def create_project():
         return jsonify({"error": "Accès non autorisé"}), 403
 
     data = request.get_json()
+    # Vérifier si les clés requises existent dans la requête JSON
+    if 'project_name' not in data or 'project_description' not in data or 'expired_at' not in data:
+        return jsonify({'error': 'Les données requises sont manquantes'}), 400
+
     
     new_project = Project(project_name=data['project_name'], 
                           project_description=data['project_description'], 
                           expired_at=data['expired_at'])
     
     if 'comments' in data:
-        for comment_text in data['comments'][0]:
+        for comment_text in data['comments']:
             new_comment = Comments(comments_lib=comment_text)
             new_project.comments.append(new_comment)
 
@@ -202,7 +211,7 @@ def create_project():
     return jsonify({'message': 'Project created successfully', 'idproject': new_project.idproject}), 201
 
 #Route pour recuperer un projet avec son id depuis la vue admin
-@app.route('/admin/project/<int:idproject>')
+@app.route('/api/admin/project/<int:idproject>')
 @cross_origin()
 @jwt_required()
 def get_project(idproject):
@@ -243,7 +252,7 @@ def get_project(idproject):
         return jsonify({"error": "Projet non trouvé"}), 404
 
 #Route pour recuperer un projet avec son id depuis la vue equipe
-@app.route('/team/project/<int:idproject>')
+@app.route('/api/team/project/<int:idproject>')
 @cross_origin()
 @jwt_required()
 def get_team_project(idproject):
@@ -279,7 +288,7 @@ def get_team_project(idproject):
         return jsonify({"error": "Projet non trouvé"}), 404
 
 # Route pour modifier un projet, son status et son commentaire
-@app.route('/admin/editp/<int:idproject>', methods=['PUT'])
+@app.route('/api/admin/editp/<int:idproject>', methods=['PUT'])
 @cross_origin()
 @jwt_required()
 def update_project(idproject):
@@ -329,11 +338,10 @@ def update_project(idproject):
     
     db.session.add(project)            
     db.session.commit()
-    project_dict = to_dict(project)
 
-    return jsonify(project_dict), 200
+    return jsonify({"msg": "Projet modifie"}), 200
 
-@app.route('/admin/delp/<int:idproject>', methods=['DELETE'])
+@app.route('/api/admin/delp/<int:idproject>', methods=['DELETE'])
 def delete_project(idproject):
     project = Project.query.get(idproject)
     db.session.delete(project)
@@ -341,13 +349,12 @@ def delete_project(idproject):
     return jsonify({'message': 'Projet supprime avec succes'}), 200
 
 # Liste des projets
-@app.route('/admin/projects', methods=['GET'])
+@app.route('/api/admin/projects', methods=['GET'])
 @cross_origin()
 @jwt_required()
 def list_project():    
     if not is_admin():
         return jsonify({"error": "Accès non autorisé"}), 403
-    
     projects = Project.query.all()
     project_list = []
     if projects:
@@ -370,29 +377,33 @@ def list_project():
     
 ###################################################################### Equipe ##########################################################
 # Creer une nouvelle equipe
-@app.route('/admin/team', methods=['POST'])
+@app.route('/api/admin/team', methods=['POST'])
+@cross_origin()
+@jwt_required()
 def create_team():
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+    
     data = request.get_json()
     
-    new_team = ProjectTeam(team_name=data['team_name'], team_description=['team_description'], )
+    new_team = ProjectTeam(team_name=data['team_name'], team_description=['team_description'])
     db.session.add(new_team)
     db.session.commit()
     return jsonify({'message': 'Team created successfully'}), 200
 
 #Supprimer une equipe
-@app.route('/admin/delt/<int:idteam>', methods=['DELETE'])
+@app.route('/api/admin/delt/<int:idteam>', methods=['DELETE'])
 def delete_team(idteam):
     team = ProjectTeam.query.get(idteam)
     db.session.delete(team)
     db.session.commit()
     return jsonify({'message': 'Team supprime avec succes'}), 200
 
-@app.route('/admin/teams', methods=['GET'])
+@app.route('/api/admin/teams', methods=['GET'])
 @cross_origin()
 @jwt_required()
 def list_team():
     if not is_admin():
-        print('errors')
         return jsonify({"error": "Accès non autorisé"}), 403
 
     teams = ProjectTeam.query.all()
@@ -410,10 +421,13 @@ def list_team():
     return jsonify(team_list)
 
 # Recuperer les information d' une equipe
-@app.route('/admin/team/<int:idteam>', methods=['GET'])
+@app.route('/api/admin/team/<int:idteam>', methods=['GET'])
 @cross_origin()
 @jwt_required()
 def get_team(idteam):
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     team =  db.session.get(ProjectTeam, idteam)
     if team is not None:
         #Récupérer tous les projets de l'équipe
@@ -443,9 +457,13 @@ def get_team(idteam):
         return jsonify({'message': 'Une erreur est survenue lors de la recuperation des liste de l\'équipe'}), 500
 
 #Mettre a jour une equipe
-@app.route('/admin/editeq/<int:idteam>', methods=['PUT'])
+@app.route('/api/admin/editeq/<int:idteam>', methods=['PUT'])
 @cross_origin()
+@jwt_required()
 def update_team(idteam):
+    if not is_admin():
+        return jsonify({"error": "Accès non autorisé"}), 403
+
     data = request.get_json()
     # print(request)
     # Récupérer les détails de l'équipe depuis la base de données
@@ -457,7 +475,8 @@ def update_team(idteam):
         team.team_name = data['team_name']
     if 'team_description' in data:
         team.team_description = data['team_description']
-    if 'members' in data:
+    if 'members' in data and data['members'] is not []:
+        print(data['members'])
         members_ids = data['members']
         team.members = [db.session.get(Member, member_id) for member_id in members_ids]
 
@@ -478,7 +497,7 @@ def update_team(idteam):
 
 #################################################### Tasks ############################
 # Ajouter une tache
-@app.route('/project/<int:idproject>/tasks', methods=['POST'])
+@app.route('/api/project/<int:idproject>/tasks', methods=['POST'])
 @cross_origin()
 @jwt_required()
 def create_task(idproject):
@@ -494,7 +513,7 @@ def create_task(idproject):
     return jsonify({'message': 'Task created successfully'}), 201
 
 # Modifier une tache
-@app.route('/project/<int:idproject>/tasks/<int:idtasks>', methods=['PUT'])
+@app.route('/api/project/<int:idproject>/tasks/<int:idtasks>', methods=['PUT'])
 @cross_origin()
 @jwt_required()
 def update_task(idproject, idtasks):
@@ -517,7 +536,7 @@ def update_task(idproject, idtasks):
     return jsonify({'message': 'Task updated successfully'}), 200
 
 # Suprimer une tache
-@app.route('/project/<int:idproject>/tasks/<int:idtasks>', methods=['DELETE'])
+@app.route('/api/project/<int:idproject>/tasks/<int:idtasks>', methods=['DELETE'])
 @cross_origin()
 @jwt_required()
 def delete_task(idproject, idtasks):
@@ -531,7 +550,7 @@ def delete_task(idproject, idtasks):
     return jsonify({'message': 'Task deleted successfully'}), 200
 
 # Assiggner une tache a un membre
-@app.route('/project/<int:idproject>/tasks/<int:idtasks>/assign-member', methods=['POST'])
+@app.route('/api/project/<int:idproject>/tasks/<int:idtasks>/assign-member', methods=['POST'])
 @cross_origin()
 @jwt_required()
 def assign_task_to_members(idtasks):
@@ -560,7 +579,7 @@ def assign_task_to_members(idtasks):
     return jsonify({'message': 'Tâche assignée aux membres avec succès'}),
 
 #Modifier un membre d'une tache
-@app.route('/project/<int:idproject>/tasks/<int:idtasks>/assign-member', methods=['PUT'])
+@app.route('/api/project/<int:idproject>/tasks/<int:idtasks>/assign-member', methods=['PUT'])
 @cross_origin()
 @jwt_required()
 def change_task_member(idproject, idtasks):
@@ -595,7 +614,7 @@ def change_task_member(idproject, idtasks):
     return jsonify({'message': 'Membre de la tâche modifié avec succès'}), 200
 
 #Supprimer un membre d'une tache
-@app.route('/project/<int:idproject>/tasks/<int:idtasks>/members/<int:idmember>', methods=['DELETE'])
+@app.route('/api/project/<int:idproject>/tasks/<int:idtasks>/members/<int:idmember>', methods=['DELETE'])
 @cross_origin()
 @jwt_required()
 def remove_task_member(idproject, idtasks, idmember):
@@ -620,7 +639,7 @@ def remove_task_member(idproject, idtasks, idmember):
     return jsonify({'message': 'Membre de la tâche supprimé avec succès'}), 200
 
 #Ajouter un domain a un membre
-@app.route('/assign-member-to-domain/<int:member_id>/<int:domain_id>', methods=['POST'])
+@app.route('/api/assign-member-to-domain/<int:member_id>/<int:domain_id>', methods=['POST'])
 @cross_origin()
 @jwt_required()
 def assign_member_to_domain(member_id, domain_id):
@@ -639,7 +658,7 @@ def assign_member_to_domain(member_id, domain_id):
 
 
 ############################################### Gestion des membres ############################
-@app.route('/team/member/<int:idmember>', methods=['GET'])
+@app.route('/api/team/member/<int:idmember>', methods=['GET'])
 @cross_origin()
 @jwt_required()
 def get_member(idmember):
@@ -664,7 +683,7 @@ def get_member(idmember):
         return jsonify({"error": "Membre non trouvé"}), 404
 
 # Retirer un membre d'une equipe
-@app.route('/admin/team/<int:idteam>/del/<int:idmember>', methods=['DELETE'])
+@app.route('/api/admin/team/<int:idteam>/del/<int:idmember>', methods=['DELETE'])
 @cross_origin()
 @jwt_required()
 def delete_member_to_team(idteam, idmember):
@@ -688,7 +707,7 @@ def delete_member_to_team(idteam, idmember):
     return jsonify({'message': 'Membre retire de l\'équipe avec succès'}), 201
     
 # Ajouter un membre a une equipe
-@app.route('/admin/team/<int:idteam>', methods=['POST'])
+@app.route('/api/admin/team/<int:idteam>', methods=['POST'])
 @cross_origin()
 @jwt_required()
 def add_members_to_team(idteam):
@@ -737,7 +756,7 @@ def add_members_to_team(idteam):
 Elle récupère les données de la requête et vérifie si username, email et mot de passe sont présents
 Puis le nouvequ membre est créé avec le role correspondant
 """
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
 
@@ -761,30 +780,28 @@ def register():
 
 expired_at = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 @cross_origin()
 def login():
     
     data = request.get_json()
-    if 'username' not in data or 'password' not in data:
-        return jsonify({'message': 'Le nom d\'utilisateur et le mot de passe sont requis'}), 400
-
-    member = Member.query.filter_by(username=data['username']).first()
-    role =''
-    if member and member.check_password(data['password']):
-        roles = [role.idrole for role in member.roles]
-
-        if roles[0] == 3:
-            role = 'admin'
-        elif roles[0] == 2:
-            role = 'user'
-        access_token = create_access_token(identity={'id': member.idmember,'username': member.username, 'role': role}, expires_delta= datetime.timedelta(hours=1))
-
-        return jsonify(access_token=access_token), 200
-    else:
-        return jsonify({'message': 'Nom d\'utilisateur ou mot de passe incorrect'}), 401
+    
+    if 'username' in data and 'password' in data:
+        member = Member.query.filter_by(username=data['username']).first()
+        role =''
+        if member and member.check_password(data['password']):
+            roles = [role.idrole for role in member.roles]
+            if roles[0] == 2:
+                role = 'admin'
+            elif roles[0] == 3:
+                role = 'user'
+                
+            access_token = create_access_token(identity={'id': member.idmember,'username': member.username, 'role': role}, expires_delta= datetime.timedelta(hours=1))
+            return jsonify(access_token=access_token), 200
+        
+    return jsonify({'message': 'Nom d\'utilisateur ou mot de passe incorrect'}), 401
 
 
 if __name__ == '__main__':
     db.init_app(app)
-    app.run()
+    app.run(host="0.0.0.0", port=5000, debug=True)

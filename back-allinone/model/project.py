@@ -11,12 +11,12 @@ class Project(db.Model):
     update_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     expired_at = db.Column(db.DateTime)
     project_status = db.Column(db.Integer, db.ForeignKey('status.idstatus'), nullable=False, default=1)
-    _idproject_team = db.Column(db.Integer, db.ForeignKey('project_team.idproject_team'))
+    _idproject_team = db.Column(db.Integer, db.ForeignKey('project_team.idproject_team'), nullable=True)
     project_step = db.Column(db.Text)
     requirement = db.Column(db.String(255))
     project_team_idproject_team = db.Column(db.Integer)
-    client_user_idclient_user = db.Column(db.Integer)
-    _idclient_user = db.Column(db.Integer, db.ForeignKey('client_user.idclient_user'))
+    client_user_idclient_user = db.Column(db.Integer, db.ForeignKey('client_user.idclient_user'))
+    #_idclient_user = db.Column(db.Integer)
     
     # Les relations de la table project avec les autres tables
     project_team = db.relationship("ProjectTeam", back_populates="projects") # Relation avec la table ProjectTeam
@@ -48,7 +48,7 @@ class ClientUser(db.Model):
 
     idclient_user = db.Column(db.Integer, primary_key=True, autoincrement=True)
     client_user_name = db.Column(db.String(45), nullable=False)
-    client_email = db.Column(db.String(64), nullable=False)
+    client_email = db.Column(db.String(255), nullable=False)
     client_user_activity = db.Column(db.String(45))
     client_user_no = db.Column(db.String(45))
     _idclient_address = db.Column(db.Integer, db.ForeignKey('client_address.idclient_address'), nullable=False)

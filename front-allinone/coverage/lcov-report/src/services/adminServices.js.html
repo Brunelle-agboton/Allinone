@@ -240,11 +240,11 @@
 <span class="cstat-no" title="statement not covered" >  return apiUrl.get('/admin/projects');</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" >export const getProject = (id) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.get(`/admin/project/${id}`);</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.get(`/api/admin/project/${id}`);</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export const editProject = (id, data) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.put(`/admin/editp/${id}`, data, {</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.put(`/api/admin/editp/${id}`, data, {</span>
 <span class="cstat-no" title="statement not covered" >    headers: {</span>
 <span class="cstat-no" title="statement not covered" >      'Content-Type': 'application/json',</span>
 <span class="cstat-no" title="statement not covered" >      'Access-Control-Allow-Headers': '*',</span>
@@ -254,7 +254,7 @@
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export const delProject = (id) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.delete(`/admin/delp/${id}`);</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.delete(`/api/admin/delp/${id}`);</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >/* Team*/</span>
@@ -267,10 +267,10 @@
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export const getTeam = (id) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.get(`/admin/team/${id}`);</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.get(`/api/admin/team/${id}`);</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" >export const editTeam = (id, data) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.put(`/admin/editeq/${id}`, data, {</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.put(`/api/admin/editeq/${id}`, data, {</span>
 <span class="cstat-no" title="statement not covered" >    headers: {</span>
 <span class="cstat-no" title="statement not covered" >      'Content-Type': 'application/json',</span>
 <span class="cstat-no" title="statement not covered" >      'Access-Control-Allow-Headers': '*',</span>
@@ -279,15 +279,15 @@
 <span class="cstat-no" title="statement not covered" >  });</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" >export const delTeam = (id) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.delete(`/admin/delt/${id}`);</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.delete(`/api/admin/delt/${id}`);</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export const getMembers = () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.get(`/admin/members `);</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.get(`/api/admin/members `);</span>
 <span class="cstat-no" title="statement not covered" >};</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export const delMemberOfTeam = (idt,idm) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  return apiUrl.delete(`/admin/team/${idt}/del/${idm}`, {</span>
+<span class="cstat-no" title="statement not covered" >  return apiUrl.delete(`/api/admin/team/${idt}/del/${idm}`, {</span>
 <span class="cstat-no" title="statement not covered" >    headers: {</span>
 <span class="cstat-no" title="statement not covered" >      'Content-Type': 'application/json',</span>
 <span class="cstat-no" title="statement not covered" >    },</span>

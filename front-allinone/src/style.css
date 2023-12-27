@@ -87,20 +87,15 @@ body {
     color: #000000;
   
   }
-  
-  .sidebarMenu .nav-link.active {
-    color: #FFFFFF;
-    background: #002060;
+
+  .nav-link.active {
+    color: #FFFFFF !important;
+    background-color: #002060 !important;
   }
-  .sidebarMenu .nav-link:focus + .nav-link:after {
-    color: #002060;
-    background: #9A7029;
   
-  }
-  .sidebarMenu .nav-link:after {
+  .nav-link:after {
     color: #002060;
-    background: #9A7029;
-    
+    background-color: #9A7029 !important;
   }
   
   .sidebarMenu-heading {
@@ -157,15 +152,26 @@ body {
 .dash-card {
     border: 10 solid #002060 !important;
     margin-left: 40px;
-    margin-top: 50px;
+    margin-top: 60px!important;
     margin-bottom: 50px;
     justify-content: right;
-    background-color: #002060;
-  
-    .card {
-      margin: 0 !important;
-      padding: 0 !important;
+}
+.my-card {
+  width: 100%;
+      margin: 5px !important;
+      padding: 0px !important;
+      border: 1px solid #002060 !important;
+
     }
+  .cap{
+    border-radius: 50% !important;
+    border: 1px solid #002060 !important;
+    width: 9px !important;
+    height: 1.5vh !important;
+  }
+  .project-card{
+    margin-bottom: 8% !important;
+
   }
   .status {
     text-align: center;
@@ -181,20 +187,6 @@ body {
 .dash-row {
     justify-content: center;
 }
-.legend-circle,.carousel-caption {
-  width: 10px; /* Ajustez la largeur du cercle selon vos besoins */
-  height: 10px; /* Ajustez la hauteur du cercle selon vos besoins */
-  border-radius: 30%; /* Rend le bord du cercle arrondi */
-  background-color: #007bff; /* Couleur de fond du cercle, ajustez-la selon vos besoins */
-  border: 2px solid #007bff; /* Bordure du cercle, ajustez-la selon vos besoins */
-  margin-right: 5px; /* Marge entre les cercles, ajustez-la selon vos besoins */
-}
-
-.legends-container {
-  display: flex;
-  justify-content: center;
-}
-
 /***************************** ProjectPage Style ********************************/
 .fill {
   border: 1px solid;
@@ -367,11 +359,9 @@ table > table-hover {
       text-decoration: none;
   }
   .add-button {
-      display: flex;
-      margin-left: 74em;
-      margin-top: 10px;
-      align-self: flex-end;
-      background-color: #002060;
+      margin-left: 78%;
+      background-color: #EC7D2C !important;
+      border: none;
     }
 /*************************** ClientsDetail Style **********************************/
 /*************************** ClientCard Style **********************************/
@@ -405,9 +395,9 @@ table > table-hover {
   }
   
   .client-name {
-    font-size: 1.5em;
+    font-size: 1.25em;
     margin-left: 40%;
-    font-weight: bold;
+    font-weight:bold;
     justify-content: end !important;
 
   }

@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row dash-row">
           <div v-for="(group, status) in groupedProjects" :key="status" class="dash-card col-3">
-            <div class="card my-card" style="width: 100%; background-color: red;">
+            <div class="card my-card">
               <div class="status">{{ status }}</div>
                 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
                   <div class="carousel-indicators">
@@ -15,9 +15,10 @@
                       :data-bs-project-to="projectIndex"
                       :class="{ active: projectIndex === 0 }"
                       aria-label="project"
+                      class="cap"
                     ></button>
                   </div>
-                  <div class="carousel-inner ">
+                  <div class="carousel-inner project-card">
                     <div
                       v-for="(project, projectIndex) in group"
                       :key="projectIndex"
@@ -26,8 +27,8 @@
                     >
                       <img :src="require(`@/assets/${project.image}`)" alt="Project Slide" class="card-img-top" >
                       <div class="card-body mt-20" style="margin-bottom: 20px;">
-                        <h5 class="card-title c-t">{{ project.title }}  {{ group.length }}</h5>
-                        <h6 class="card-text">{{ project.text }}</h6>
+                        <h5 class="card-title c-t">{{ project.name }}  {{ group.length }}</h5>
+                        <h6 class="card-text">{{truncateDescription(project.description, 60) }}</h6>
                       </div>
                     </div>
                   </div>
@@ -47,48 +48,15 @@
   </div>
 </template>
 <script>
+import {getListProject} from '@/services/adminServices';
+
 export default {
   name: 'DashboardPage',
   data() {
     return {
-      projects: [
-      {
-        id: 1,
-        title: 'Projet 1',
-        status: 'En cours',
-        text:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.',
-        image: 'test.jpeg',
-      },
-      {
-        id: 2,
-        title: 'Projet 2',
-        status: 'Terminé',
-        text:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.',
-        image: 'test.jpeg',
-      },
-      {
-        id: 3,
-        title: 'Projet 3',
-        status: 'closed',
-        text:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.',
-        image: 'test.jpeg',
-      },
-      {
-        id: 4,
-        title: 'Projet 4',
-        status: 'En cours',
-        text:'Norem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.',
-        image: 'test.jpeg',
-      },    
-      ],
+      projects: [],
       groupedProjects: {}, 
     }
-  },
-  created() {
-    // Regroupez les projets par statut au moment de la création du composant
-    this.groupProjectsByStatus();
-  },
-  mounted() {
   },
   computed: {
     currentUser() {
@@ -96,18 +64,54 @@ export default {
     },
   },
   methods: {
+    truncateDescription(description, maxLength) {
+      if (description.length > maxLength) {
+        return description.substring(0, maxLength) + '...';
+      }
+      return description;
+    },
     groupProjectsByStatus() {
-      // Regroupez les projets par statut
+      
+      // Regrouper les projets par statut
       this.groupedProjects = this.projects.reduce((groups, project) => {
-        const status = project.status;
+        let status = '';
+        if (project.status == 1){
+         status = 'A faire';
+        } else if (project.status == 2){
+         status = 'Fait';
+        } else if (project.status == 3){
+         status = 'Terminé';
+        }
         if (!groups[status]) {
           groups[status] = [];
         }
+        project.image = 'logos.png';
         groups[status].push(project);
         return groups;
       }, {});
     },
-  }
+    fetchData() {
+      getListProject()
+        .then((response) => {
+          //console.log(response);
+          this.projects = response.data
+          this.groupProjectsByStatus();
+
+        })
+        .catch((error) => {
+          console.error(error)
+        });
+    },
+    formatDate(dateString) {
+      const options = { day: 'numeric', month: 'short', year: 'numeric' };
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', options);
+      },
+  },
+  mounted() {
+    // Appeler fetchData pour charger la liste des projets au chargement de la page
+    this.fetchData();
+  },
 };
 </script>
 

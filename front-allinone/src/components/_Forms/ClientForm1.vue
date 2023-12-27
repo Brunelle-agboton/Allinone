@@ -1,9 +1,9 @@
 <template>
-    <div class="modal container-fluid" id="backdrop" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+    <div class="modal" id="backdrop" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form @submit.prevent="submitForm">
-                    <div class="modal-body">
+                    <div class="row">
                         <div class="form-group">
                             <label for="client_name" class="col-form-label">Nom du client</label>
                             <input type="text" class="form-control" id="client_name" v-model="formData.client_name" required />
@@ -24,32 +24,36 @@
                             <input type="tel" class="form-control" id="client_tel" v-model="formData.client_tel" required />
                         </div>
 
-                        <div class="form-group">
+                        <div class="row">
+                            <div class="col-8">
                             <label for="street" class="col-form-label">Rue</label>
                             <input type="text" class="form-control" id="street" v-model="formData.street" required />
                         </div>
 
-                        <div class="form-group">
+                        <div class="col-4">
                             <label for="city" class="col-form-label">Ville</label>
                             <input type="text" class="form-control" id="city" v-model="formData.city" required />
                         </div>
+                        </div>
 
-                        <div class="form-group">
+                        <div class="row">
+                            <div class="col-6">
                             <label for="postal_code" class="col-form-label">Code postal</label>
                             <input type="text" class="form-control" id="postal_code" v-model="formData.postal_code" required />
                         </div>
 
-                        <div class="form-group">
+                        <div class="col-6">
                             <label for="country" class="col-form-label">Pays</label>
                             <input type="text" class="form-control" id="country" v-model="formData.country" required />
+                        </div>
                         </div>
 
                     </div>
 
-                    <div class="modal-footer">
-                        <button @click="close" type="button" class="btn btn-secondary"
+                    <div class="row" style="margin-top: 5%; justify-content:end;">
+                        <button @click="close" type="button" class="btn btn-secondary col-3"
                             data-bs-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                        <button type="submit" class="btn btn-primary col-3">Ajouter</button>
                     </div>
                 </form>
             </div>
@@ -83,7 +87,6 @@ export default {
             this.$emit('close');
         },
         showModal() {
-            console.log(this.modalVisible);
             this.modalVisible = true; // Afficher la modal
         },
         hideModal() {
@@ -105,7 +108,7 @@ export default {
             addClient(this.formData)
                 .then(response => {
                     if (response.status == 201)
-                      alert("Le Client a été ajoutée avec succès");
+                      alert("Le Client a été ajouté avec succès");
 
                     this.resetForm(); 
                     this.hideModal(); 

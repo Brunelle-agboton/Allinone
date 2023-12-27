@@ -12,14 +12,14 @@ const token = AuthService.getToken();
 
 /* Client*/
 export const getListClient = () => {
-  return apiUrl.get('/admin/clients', {
+  return apiUrl.get('/api/admin/clients', {
     headers: {
       'Authorization': 'Bearer '+ token
     }
   });
 };
 export const addClient = (data) => {
-  return apiUrl.post('/admin/client', data, {
+  return apiUrl.post('/api/admin/client', data, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -28,7 +28,7 @@ export const addClient = (data) => {
 /* Projet*/
 
 ;export const addProject = (data) => {
-  return apiUrl.post('/admin/project', data, {
+  return apiUrl.post('/api/admin/project', data, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -36,14 +36,14 @@ export const addClient = (data) => {
 };
 
 export const getListProject = () => {
-  return apiUrl.get('/admin/projects', {
+  return apiUrl.get('/api/admin/projects', {
     headers: {
       'Authorization': 'Bearer '+ token
     }
   });
 };
 export const getProject = (id) => {
-  return apiUrl.get(`/admin/project/${id}`, {
+  return apiUrl.get(`/api/admin/project/${id}`, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -51,7 +51,7 @@ export const getProject = (id) => {
 };
 
 export const editProject = (id, data) => {
-  return apiUrl.put(`/admin/editp/${id}`, data, {
+  return apiUrl.put(`/api/admin/editp/${id}`, data, {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Headers': '*',
@@ -62,12 +62,12 @@ export const editProject = (id, data) => {
 };
 
 export const delProject = (id) => {
-  return apiUrl.delete(`/admin/delp/${id}`);
+  return apiUrl.delete(`/api/admin/delp/${id}`);
 };
 
 /************************************************* Team **************************************************/
 export const getTeams = () => {
-  return apiUrl.get('/admin/teams', {
+  return apiUrl.get('/api/admin/teams', {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -75,7 +75,7 @@ export const getTeams = () => {
 };
 
 export const addTeam = (data) => {
-  return apiUrl.post('/admin/team', data, {
+  return apiUrl.post('/api/admin/team', data, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -83,10 +83,14 @@ export const addTeam = (data) => {
 };
 
 export const getTeam = (id) => {
-  return apiUrl.get(`/admin/team/${id}`);
+  return apiUrl.get(`/api/admin/team/${id}`, {
+    headers: {
+      'Authorization': 'Bearer '+ token
+    }
+  });
 };
 export const editTeam = (id, data) => {
-  return apiUrl.put(`/admin/editeq/${id}`, data, {
+  return apiUrl.put(`/api/admin/editeq/${id}`, data, {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Headers': '*',
@@ -96,11 +100,11 @@ export const editTeam = (id, data) => {
   });
 };
 export const delTeam = (id) => {
-  return apiUrl.delete(`/admin/delt/${id}`);
+  return apiUrl.delete(`/api/admin/delt/${id}`);
 };
 
 export const getMember = (id) => {
-  return apiUrl.get(`/team/member/${id}`, {
+  return apiUrl.get(`/api/team/member/${id}`, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -108,7 +112,7 @@ export const getMember = (id) => {
 }
 
 export const getMembers = () => {
-  return apiUrl.get(`/admin/members `, {
+  return apiUrl.get(`/api/admin/members `, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -116,7 +120,7 @@ export const getMembers = () => {
 };
 
 export const delMemberOfTeam = (idt,idm) => {
-  return apiUrl.delete(`/admin/team/${idt}/del/${idm}`, {
+  return apiUrl.delete(`/api/admin/team/${idt}/del/${idm}`, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -124,7 +128,7 @@ export const delMemberOfTeam = (idt,idm) => {
 };
 
 export const getProjectsTeam = (id) =>{
-  return apiUrl.get(`/team/project/${id}`, {
+  return apiUrl.get(`/api/team/project/${id}`, {
     headers: {
       'Authorization': 'Bearer '+ token
     }
@@ -132,7 +136,7 @@ export const getProjectsTeam = (id) =>{
 };
 
 export const addTask = (id,data) => {
-  return apiUrl.post(`/project/${id}/tasks`, data, {
+  return apiUrl.post(`/api/project/${id}/tasks`, data, {
     headers: {
       'Authorization': 'Bearer '+ token
     }

@@ -4,6 +4,7 @@
           <div class="modal-content">
           <form @submit.prevent="submitForm">
             <div class="row pf">
+              
               <!--<div class="form-group">
                 <label for="code" class="col-form-label">Code :</label>
                 <input type="text" class="form-control" id="code" v-model="code" required>
@@ -97,6 +98,7 @@ import {addProject} from '@/services/adminServices';
   };
 </script>
 <style>
+
 .modal {
     width: 100% !important;
     box-shadow: 2px 2px 20px 1px;

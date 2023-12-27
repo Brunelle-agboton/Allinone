@@ -23,8 +23,8 @@
               </div>
               <div class="mb-3">
                 <label for="equipe" class="form-label">Équipe de Gestion</label>
-                <select class="form-select" id="equipe">
-                    <option selected>Sélectionnez une équipe</option>
+                <select class="form-select" id="equipe" value="Sélectionnez une équipe" v-model="project.team">
+                    <option  selected disabled>Sélectionnez une équipe</option>
                     <option v-for="t in teams" :key="t.idproject_team" :value="t.name">{{ t.name }}</option>
                 </select>
                 {{ project.team ? project.team.team_name : '' }}
@@ -120,7 +120,7 @@ export default {
       cuser: 0,
       project: {
         team: {
-        idproject_team: null,
+        idproject_team: 0,
         team_name: ""
       },
       },

@@ -141,9 +141,10 @@
     },
  
     enregistrerModifications() {
-      this.team.members.push({ idmember: this.selectedMember });
-      console.log(this.team);
-
+      if (this.selectedMember != null) {
+        this.team.members.push({ idmember: this.selectedMember });
+        //console.log(this.team);
+      }
       editTeam(this.team.idproject_team, this.team,{
         headers: {
           'Content-Type': 'application/json',

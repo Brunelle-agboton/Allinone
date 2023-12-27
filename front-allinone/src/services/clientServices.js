@@ -7,7 +7,7 @@ const apiUrl = axios.create({
 
 export const getAllUsers = () => {
     return new Promise((resolve, reject) => {
-        apiUrl.get('/users')
+        apiUrl.get('/api/users')
         .then(response => resolve(response))
         .catch(error => reject(error));
         }); 

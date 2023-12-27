@@ -1,0 +1,51 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.35
+    volumes:
+      - db-data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: Emmanuel_7
+      MYSQL_DATABASE: db_allinone
+      MYSQL_USER: root
+  back:
+    build:
+      context: ./back-allinone
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql   
+    ports:
+      - "5000:5000"
+    restart: always
+    environment:
+      - DB_DATA_Host=mysql
+      - DB_DATA_Database=db_allinone
+      - DB_DATA_User=root
+      - DB_DATA_Password=Emmanuel_7
+    networks:
+      - back-tier
+  front:
+    build:
+      context: ./front-allinone
+      dockerfile: Dockerfile
+    depends_on:
+      - back
+    ports:
+      - "8080:80"
+    restart: always
+    networks:
+      - front-tier
+      - back-tier
+    environment:
+      VUES_DB_HOST: mysql:3306
+      VUES_DB_USER: root
+      VUES_DB_PASSWORD: Emmanuel_7
+      VUES_DB_NAME: brunelle
+  
+volumes:
+  db-data: {}
+
+networks:
+  # The presence of these objects is sufficient to define them
+  front-tier: {}
+  back-tier: {}

@@ -73,7 +73,7 @@
               </td>-->
               <td><router-link style="text-decoration: none; color: #000000;" :to="'projet/' + project.idproject">{{ project.idproject }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ project.name }}</router-link></td>
-              <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ project.description }}</router-link></td>
+              <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ truncateDescription(project.description, 70) }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ formatDate(project.created_at) }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ formatDate(project.expired_at) }}</router-link></td>
               <td><router-link style="text-decoration: none; color: #002060;" :to="'projet/' + project.idproject">{{ project.progress }}</router-link></td>
@@ -120,6 +120,12 @@ export default {
     
   },
   methods: {
+    truncateDescription(description, maxLength) {
+      if (description.length > maxLength) {
+        return description.substring(0, maxLength) + '...';
+      }
+      return description;
+    },
     // Afficher le modal
     showModal() {
         this.isModalVisible = true;

@@ -5,7 +5,7 @@
             <div class="client-name">{{ client.name }}</div>
         </div>
         <div class="card-body">
-            <div class="card-text">{{ client.description }}</div>
+            <div class="card-text">{{ client.activity }}</div>
         </div>
     </div>
   </template>

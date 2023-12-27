@@ -52,7 +52,7 @@ export default {
         await this.login(userData);
         if (this.currentToken !== ''){
             if (this.$store.state.auth.user.role == 'admin') {
-              this.$router.push('/admin');
+              this.$router.push('/admin/dash');
               console.log(`Redirection de l'utilisateur après ${this.$store.state.auth.user.username} une connexion réussie.`);
             }else {
               this.$router.push('/team');

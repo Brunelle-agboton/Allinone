@@ -8,7 +8,7 @@ const apiUrl = axios.create({
 axios.defaults.withCredentials = true
 
 export const authenticate = (data) => {
-    return apiUrl.post('/login', data, {
+    return apiUrl.post('/api/login', data, {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Headers': '*',

@@ -5,7 +5,7 @@ const apiUrl = axios.create({
 });
 
 export const getListTasks =() => {
-  return apiUrl.get('/team/tasks');
+  return apiUrl.get('/api/team/tasks');
 
 };
 apiUrl

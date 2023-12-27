@@ -24,34 +24,7 @@ export default {
   },
 data() {
     return {
-      clients: [
-        // Liste de vos clients existants
-        {
-          name: "Client 1",
-          logo: "icon.png",
-          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.",
-        },
-        {
-          name: "Client 2",
-          logo: "icon.png",
-          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.",
-        },
-        {
-          name: "Client 2",
-          logo: "icon.png",
-          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.",
-        },
-        {
-          name: "Client 2",
-          logo: "icon.png",
-          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.",
-        },{
-          name: "Client 9",
-          logo: "icon.png",
-          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.",
-        },
-        // Ajoutez d'autres clients ici
-      ],
+      clients: [],
       isModalVisible: false,
     };
   },
@@ -73,7 +46,6 @@ data() {
         .then((response) => {
           response.data.forEach((client) => {
           client.logo = "icon.png";
-          client.description = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam quasi cumque eaque nemo autem voluptatibus.";
           this.clients.push(client)
           });
           // console.log(response.data)
