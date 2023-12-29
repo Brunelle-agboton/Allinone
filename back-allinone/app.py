@@ -23,7 +23,9 @@ load_dotenv()
 # Configurer la base de données SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
-
+app.config['SQLALCHEMY_BINDS'] = {
+    'default': 'mysql://allinone:Emmanuel_7@localhost/db_allinone'
+}
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 class Base(DeclarativeBase):
