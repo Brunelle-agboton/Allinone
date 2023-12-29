@@ -1,6 +1,6 @@
 # Back-allinone
 
-Le backend du projet Allio=none est développé en python et flask. Voici les commandes essentielles pour une bonne exécution de ce dernier.
+Le backend du projet Allinone est développé en python et flask. Voici les commandes essentielles pour une bonne exécution de ce dernier.
 
 ## Prérequis
 
@@ -25,7 +25,7 @@ Le backend du projet Allio=none est développé en python et flask. Voici les co
 
 ## Lancer l'application
 ```
-    flask run
+    python3 app.py 
 ```
     Ouvrez votre navigateur et accédez à http://localhost:5000.
 

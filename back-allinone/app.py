@@ -4,7 +4,8 @@ from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 import datetime
-from sqlalchemy.orm import class_mapper
+from sqlalchemy.orm import class_mapper,DeclarativeBase
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
@@ -25,7 +26,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIF
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-db = SQLAlchemy()
+class Base(DeclarativeBase):
+  pass
+
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
 
 # Configurer l'environnement de développement
 #app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
@@ -779,8 +784,6 @@ def register():
         db.session.rollback()
         return jsonify({'message': f'Erreur lors de la création du membre: {str(e)}'}), 500
 
-expired_at = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-
 @app.route('/api/login', methods=['POST'])
 @cross_origin()
 def login():
@@ -810,5 +813,4 @@ def login():
 
 
 if __name__ == '__main__':
-    db.init_app(app)
     app.run(host="0.0.0.0", port=5000, debug=False)

@@ -40,7 +40,7 @@ services:
       VUES_DB_HOST: mysql:3306
       VUES_DB_USER: allinone
       VUES_DB_PASSWORD: Emmanuel_7
-      VUES_DB_NAME: brunelle
+      VUES_DB_NAME: mysql
   
 volumes:
   db-data: {}

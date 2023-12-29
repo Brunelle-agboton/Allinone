@@ -19,8 +19,8 @@ RUN pip install -r requirements.txt
 RUN pip install gunicorn
 COPY . .
 EXPOSE 5000
-ENTRYPOINT ["python3", "app.py"]
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:5000 app:app --daemon && \
+#ENTRYPOINT ["python3", "app.py"]
+CMD ["sh", "-c", "ENV=production gunicorn -w 4 -b 0.0.0.0:5000 app:app --daemon && \
  sed -i -e 's/$PORT/'\"$PORT\"'/g' /etc/nginx/conf.d/default.conf &&\
  nginx -g 'daemon off;'"]
 
