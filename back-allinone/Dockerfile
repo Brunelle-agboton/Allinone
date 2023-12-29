@@ -1,18 +1,26 @@
-# Utilisation d'une image Python officielle comme base
-FROM python:3.8
-
-# Définir le répertoire de travail dans le conteneur
+# production
+FROM nginx:stable-alpine as production
 WORKDIR /app
+RUN apk update && apk add --no-cache python3 && \    
+    python3 -m ensurepip && \   
+    rm -r /usr/lib/python*/ensurepip && \  
+    pip3 install --upgrade pip setuptools && \   
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \  
+    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \   
+    rm -r /root/.cache
+#RUN apk update && apk add mysql mysql-client mariadb-dev gcc
+RUN apk update \
+    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    && apk add --no-cache mariadb-dev
 
-# Copier les fichiers de dépendances et installer les packages
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copier le reste du code de l'application dans le conteneur
+#COPY ./nginx/default.conf /etc/nginx/nginx.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+RUN pip install gunicorn
 COPY . .
-
-# Exposer le port sur lequel Gunicorn va s'exécuter
 EXPOSE 5000
+#ENTRYPOINT ["python3", "app.py"]
+CMD ["sh", "-c", "gunicorn -w 4 app:app --bind 0.0.0.0:5000 --daemon && nginx -g 'daemon off;'"]
 
-# Commande pour lancer l'application Flask avec Gunicorn
-CMD ["gunicorn", "-w", "4", "app:app", "--bind", "0.0.0.0:5000"]
+
