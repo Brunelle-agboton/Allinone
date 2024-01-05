@@ -1,4 +1,8 @@
-from app import db, bcrypt
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+
+db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 class Project(db.Model):
     __tablename__ = 'project'
@@ -214,3 +218,6 @@ class MemberHasDomain(db.Model):
 
     # Vous n'avez pas besoin de définir de relation ici car elle est gérée via 'domains' dans Member et 'members' dans Domain.
 
+
+def init_db(app):
+    db.init_app(app)

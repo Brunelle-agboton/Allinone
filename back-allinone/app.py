@@ -1,53 +1,66 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 import datetime
-from sqlalchemy.orm import class_mapper,DeclarativeBase
-
+from sqlalchemy.orm import class_mapper
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
+import logging
+from logging.handlers import RotatingFileHandler
+from model.project import *
 
 
 app = Flask(__name__)
+
+
+# Configuration de la base de données
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_BINDS'] = {
+    'default': 'mysql+pymysql://allinone:Emmanuel_7@localhost/db_allinone'
+}
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+init_db(app)
+
 jwt = JWTManager(app)
-
-CORS(app, resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True,  "allow_headers": ["Content-Type"]}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:8081", "supports_credentials": True, "allow_headers": ["Content-Type"]}})
 app.config['CORS_HEADERS'] = 'Content-Type'
-
 bcrypt = Bcrypt(app)
 load_dotenv()
 
-# Configurer la base de données SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
-app.config['SQLALCHEMY_BINDS'] = {
-    'default': 'mysql://allinone:Emmanuel_7@localhost/db_allinone'
-}
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+# Définir une classe de base pour vos modèles SQLAlchemy
+class Base(db.Model):
+    __abstract__ = True
 
-class Base(DeclarativeBase):
-  pass
+# Charger les modèles après l'initialisation de la base de données
 
-db = SQLAlchemy(model_class=Base)
-db.init_app(app)
-
-# Configurer l'environnement de développement
-#app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
-#app.config['FLASK_DEBUG'] = os.getenv('FLASK_DEBUG')
-
-from model.project import *
-
+# Fonction pour convertir un modèle SQLAlchemy en dictionnaire
 def to_dict(model):
-    """Converts a SQLAlchemy model to a dictionary."""
     return {col.name: getattr(model, col.name) for col in class_mapper(model.__class__).mapped_table.c}
 
+# Avant chaque requête, ajouter la session à l'objet global 'g'
+@app.before_request
+def before_request():
+    g.db = db.session
 
-@app.route('/', methods = ['Get'])
+# Après chaque requête, supprimer la session
+@app.teardown_request
+def teardown_request(exception=None):
+    db.session.remove()
+
+# Route de test
+@app.route('/', methods=['GET'])
 def hello_world():
     return 'Hello, World!'
+
+# Gérer les options CORS
+@app.route('/', methods=['OPTIONS'])
+def handle_options():
+    return jsonify(success=True), 200, {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': '*'}
+
 
 #@app.after_request
 #def after_request(response):
@@ -55,12 +68,6 @@ def hello_world():
 #   response.headers['Access-Control-Allow-Origin']='*'
 #   response.headers['Vary']='Origin'
 #   return response
-
-
-@app.route('/', methods=['OPTIONS'])
-def handle_options():
-    return jsonify(success=True), 200, {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': '*'}
-
 @jwt_required()
 def is_admin():
     current_user = get_jwt_identity()
@@ -815,4 +822,10 @@ def login():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    
+    # Configurer les logs
+    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+
+    app.run(host="0.0.0.0", port=5000, debug=True)
