@@ -12,6 +12,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from model.project import *
 
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -22,20 +23,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_BINDS'] = {
     'default': 'mysql+pymysql://allinone:Emmanuel_7@localhost/db_allinone'
 }
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+#app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 init_db(app)
+app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 jwt = JWTManager(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8081", "supports_credentials": True, "allow_headers": ["Content-Type"]}})
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080", "supports_credentials": True, "allow_headers": ["Content-Type"]}})
 app.config['CORS_HEADERS'] = 'Content-Type'
-bcrypt = Bcrypt(app)
-load_dotenv()
+#bcrypt = Bcrypt(app)
 
-# Définir une classe de base pour vos modèles SQLAlchemy
-class Base(db.Model):
-    __abstract__ = True
-
-# Charger les modèles après l'initialisation de la base de données
 
 # Fonction pour convertir un modèle SQLAlchemy en dictionnaire
 def to_dict(model):
@@ -798,20 +795,20 @@ def register():
 def login():
     #Récupération des données dans la requête
     data = request.get_json()
-    
     #Vérification des champs obligatoires
     if 'username' in data and 'password' in data:
         member = Member.query.filter_by(username=data['username']).first()
+
         role =''
         if member and member.check_password(data['password']):
-            roles = [role.idrole for role in member.roles]
-            if roles[0] == 1:
+            roles = [r.role for r in member.roles]
+            if any(role.idrole == 1 for role in roles):
                 role = 'super-admin'
-            elif roles[0] == 2:
+            elif any(role.idrole == 2 for role in roles):
                 role = 'admin'
-            elif roles[0] == 3:
+            elif any(role.idrole == 3 for role in roles):
                 role = 'user'
-            elif roles[0] == 3:
+            elif any(role.idrole == 4 for role in roles):
                 role = 'client'
             
             #Génération d'un token à partir des données en paramètres    

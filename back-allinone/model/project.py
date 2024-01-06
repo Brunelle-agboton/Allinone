@@ -31,6 +31,9 @@ class Project(db.Model):
     resumes=db.relationship("Resume", back_populates="project")
     # meetings=db.Column("Meeting", back_populates="project")
     
+    __bind_key__ = 'default'
+    
+    
 class Meeting(db.Model):
     __tablename__ = 'meeting'
 
@@ -46,6 +49,9 @@ class Meeting(db.Model):
     client_user = db.relationship("ClientUser", primaryjoin="Meeting._idclient_user == ClientUser.idclient_user", back_populates="meetings")
     # project = db.relationship("Project", back_populates="meetings")
     project_team = db.relationship("ProjectTeam", back_populates="meetings")
+    
+    __bind_key__ = 'default'
+    
 
 class ClientUser(db.Model):
     __tablename__ = 'client_user'
@@ -64,6 +70,8 @@ class ClientUser(db.Model):
     # comments = db.relationship("Comments", back_populates="client_user")
     meetings = db.relationship("Meeting",primaryjoin="ClientUser.idclient_user == Meeting._idclient_user", back_populates="client_user")
     #tasks = db.relationship("Tasks", secondary='tasks_has_client_user', back_populates="client_users")
+    __bind_key__ = 'default'
+    
 
 class ClientAddress(db.Model):
     __tablename__ = 'client_address'
@@ -76,6 +84,9 @@ class ClientAddress(db.Model):
     
     client_users = db.relationship("ClientUser", back_populates="client_address")
     
+    __bind_key__ = 'default'
+    
+    
 class Comments(db.Model):
     __tablename__ = 'comments'
 
@@ -85,6 +96,9 @@ class Comments(db.Model):
     project_idproject = db.Column(db.Integer, db.ForeignKey('project.idproject'), nullable=False)
 
     project = db.relationship("Project", back_populates="comments")
+    
+    __bind_key__ = 'default'
+    
 
 class Status(db.Model):
     __tablename__ = 'status'
@@ -94,27 +108,42 @@ class Status(db.Model):
 
     projects = db.relationship("Project", back_populates="status")
     tasks=db.relationship("Tasks", back_populates="status")
-       
-class ProjectTeam(db.Model):
-    __tablename__ = 'project_team'
+    __bind_key__ = 'default'
+    
+class ProjectTeamHasMember(db.Model):
+    __tablename__ = 'project_team_has_member'
 
-    idproject_team = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    team_name = db.Column(db.String(45))
-    team_description = db.Column(db.String(64))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    last_modified = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    project_team_idproject_team = db.Column(db.Integer, db.ForeignKey('project_team.idproject_team'), primary_key=True)
+    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
     
-    # Définir les relations avec les autres tables
-    members = db.relationship("Member", secondary='project_team_has_member', back_populates="teams")
+    team =db.relationship("ProjectTeam",back_populates="members")
+    memb =db.relationship("Member",back_populates="teams")
+    __bind_key__ = 'default'
+
+class MemberHasRole(db.Model):
+    __tablename__ = 'member_has_role'
+    __bind_key__ = 'default'
     
-    projects = db.relationship("Project", back_populates="project_team") # Relation inverse avec la table Project
+    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
+    role_idrole = db.Column(db.Integer, db.ForeignKey('role.idrole'), primary_key=True)
     
-    meetings=db.relationship("Meeting", back_populates="project_team")
-    tasks=db.relationship("Tasks", back_populates="project_team")
+    role =db.relationship("Role",back_populates="members")
+    memb =db.relationship("Member",back_populates="roles")
+    
+
+class MemberHasDomain(db.Model):
+    __tablename__ = 'member_has_domain'
+    __bind_key__ = 'default'
+
+    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
+    domain_iddomain = db.Column(db.Integer, db.ForeignKey('domain.iddomain'), primary_key=True)
+
+    domain = db.relationship("Domain",back_populates="members")
+    memb = db.relationship("Member",back_populates="domains")
 
 class Member(db.Model):
     __tablename__ = 'member'
+    __bind_key__ = 'default'    
 
     idmember = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(16), nullable=False)
@@ -132,19 +161,14 @@ class Member(db.Model):
         # Logique pour déterminer si le membre est un administrateur
         return any(role.admin or role.super_admin for role in self.roles)
 
-    roles = db.relationship("Role", secondary='member_has_role', back_populates="members")
-    domains = db.relationship("Domain", secondary='member_has_domain', back_populates="members")
-    tasks = db.relationship("Tasks", secondary='member_has_tasks', back_populates="members", secondaryjoin="Member.idmember == member_has_tasks.c.member_idmember")
-    teams=db.relationship("ProjectTeam", secondary='project_team_has_member', back_populates="members")
+    roles = db.relationship("MemberHasRole", back_populates="memb")
+    domains = db.relationship("MemberHasDomain", back_populates="memb")
+    #tasks = db.relationship("MemberHasTasks", back_populates="memb")
+    teams=db.relationship("ProjectTeamHasMember", back_populates="memb")
     
-class ProjectTeamHasMember(db.Model):
-    __tablename__ = 'project_team_has_member'
-
-    project_team_idproject_team = db.Column(db.Integer, db.ForeignKey('project_team.idproject_team'), primary_key=True)
-    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
-
 class Role(db.Model):
     __tablename__ = 'role'
+    __bind_key__ = 'default'
 
     idrole = db.Column(db.Integer, primary_key=True, autoincrement=True)
     super_admin = db.Column(db.Boolean)
@@ -153,7 +177,40 @@ class Role(db.Model):
     client = db.Column(db.Boolean)
 
     client_users = db.relationship("ClientUser", back_populates="role")
-    members = db.relationship("Member", secondary='member_has_role', back_populates="roles")
+    members = db.relationship("MemberHasRole", back_populates="role")
+       
+
+class ProjectTeam(db.Model):
+    __tablename__ = 'project_team'
+
+    idproject_team = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    team_name = db.Column(db.String(45))
+    team_description = db.Column(db.String(64))
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    last_modified = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    # Définir les relations avec les autres tables
+    members = db.relationship("ProjectTeamHasMember", back_populates="team")
+    projects = db.relationship("Project", back_populates="project_team") # Relation inverse avec la table Project
+    
+    meetings=db.relationship("Meeting", back_populates="project_team")
+    tasks=db.relationship("Tasks", back_populates="project_team")
+    
+    __bind_key__ = 'default'
+ 
+
+
+class MemberHasTasks(db.Model):
+    __tablename__ = 'member_has_tasks'
+
+    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
+    tasks_idtasks = db.Column(db.Integer, db.ForeignKey('tasks.idtasks'), primary_key=True)
+    tasks_project_idproject1 = db.Column(db.Integer, db.ForeignKey('project.idproject'), primary_key=True)
+    
+    memb = db.relationship('Member', backref='tasks')
+    tasks = db.relationship('Tasks', backref='members')
+    __bind_key__ = 'default'
 
 class Tasks(db.Model):
     __tablename__ = 'tasks'
@@ -172,17 +229,11 @@ class Tasks(db.Model):
 
     project_team = db.relationship("ProjectTeam", back_populates="tasks")
     status = db.relationship("Status", back_populates="tasks")
-    members = db.relationship("Member", secondary='member_has_tasks', back_populates="tasks", primaryjoin="Tasks.idtasks == member_has_tasks.c.tasks_idtasks")
-#client_users = db.relationship("ClientUser", back_populates="tasks")
+    #members = db.relationship("MemberHasTasks", back_populates="tasks")
+    #client_users = db.relationship("ClientUser", back_populates="tasks")
+    __bind_key__ = 'default'
 
-class MemberHasTasks(db.Model):
-    __tablename__ = 'member_has_tasks'
 
-    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
-    tasks_idtasks = db.Column(db.Integer, primary_key=True)
-    tasks_project_idproject1 = db.Column(db.Integer, primary_key=True)
-
-    # Vous n'avez pas besoin de définir de relation ici car elle est gérée via 'tasks' dans Member et 'members' dans Task.
 
 class Domain(db.Model):
     __tablename__ = 'domain'
@@ -190,7 +241,9 @@ class Domain(db.Model):
     domain_name = db.Column(db.String(64))
     member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), nullable=False)
     
-    members = db.relationship("Member", secondary='member_has_domain', back_populates="domains")
+    members = db.relationship("MemberHasDomain", back_populates="domain")
+    __bind_key__ = 'default'
+    
 
 class Resume(db.Model):
     __tablename__ = 'resume'
@@ -201,22 +254,9 @@ class Resume(db.Model):
 
     # Définir la relation avec la table Project
     project = db.relationship("Project", back_populates="resumes")
-
-class MemberHasRole(db.Model):
-    __tablename__ = 'member_has_role'
-
-    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
-    role_idrole = db.Column(db.Integer, db.ForeignKey('role.idrole'), primary_key=True)
-
-    # Vous n'avez pas besoin de définir de relation ici car elle est gérée via 'roles' dans Member et 'members' dans Role.
-
-class MemberHasDomain(db.Model):
-    __tablename__ = 'member_has_domain'
-
-    member_idmember = db.Column(db.Integer, db.ForeignKey('member.idmember'), primary_key=True)
-    domain_iddomain = db.Column(db.Integer, db.ForeignKey('domain.iddomain'), primary_key=True)
-
-    # Vous n'avez pas besoin de définir de relation ici car elle est gérée via 'domains' dans Member et 'members' dans Domain.
+    
+    __bind_key__ = 'default'
+    
 
 
 def init_db(app):
